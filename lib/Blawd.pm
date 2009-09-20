@@ -50,7 +50,7 @@ __END__
 
 =head1 NAME
 
-Blawd - A class to ...
+Blawd - A Git based Blog
 
 =head1 VERSION
 
