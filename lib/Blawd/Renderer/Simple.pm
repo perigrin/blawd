@@ -1,9 +1,9 @@
-package Blawd::View::Simple;
+package Blawd::Renderer::Simple;
 use Moose;
 use 5.10.0;
 use namespace::autoclean;
 
-with qw(Blawd::View::API);
+with qw(Blawd::Renderer::API);
 
 sub render_entry {
     my ( $self, $entry ) = @_;

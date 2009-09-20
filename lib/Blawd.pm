@@ -1,11 +1,12 @@
 package  Blawd;
-use Moose;
+use Moose 0.90;
 use 5.10.0;
 use namespace::autoclean;
 
 our $VERSION = '0.01';
 
 use Blawd::GitInterface;
+use Blawd::Index;
 use MooseX::Types::Path::Class qw(Dir);
 
 has repo => (
@@ -13,12 +14,6 @@ has repo => (
     is       => 'ro',
     coerce   => 1,
     required => 1
-);
-
-has view => (
-    isa     => 'Str',
-    is      => 'ro',
-    default => 'Blawd::View::Simple'
 );
 
 has _git => (
@@ -31,21 +26,20 @@ sub _build__git {
     my $self = shift;
     Blawd::GitInterface->new( gitdir => $self->repo );
 }
-has _view_instance => (
-    does       => 'Blawd::View::API',
-    handles    => 'Blawd::View::API',
+
+has _index => (
+    isa        => 'Blawd::Index',
+    handles    => 'Blawd::Renderable',
     lazy_build => 1,
 );
 
-sub _build__view_instance {
-    my ($self) = @_;
-    Class::MOP::load_class( $self->view );
-    $self->view->new();
+sub _build__index {
+    Blawd::Index->new( entries => [ shift->git->find_entries ] );
 }
 
 sub run {
     my $self = shift;
-    $self->render( $self->git->find_entries );
+    $self->render;
 }
 
 __PACKAGE__->meta->make_immutable;

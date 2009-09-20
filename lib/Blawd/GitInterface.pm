@@ -6,6 +6,8 @@ extends qw(Git::PurePerl);
 use Blawd::Entry;
 use Memoize;
 
+has entry => ( isa => 'Str', is => 'ro', default => 'Blawd::Entry' );
+
 sub check_tree {
     my ( $tree, $target ) = @_;
     my @subtree;
@@ -25,10 +27,10 @@ memoize 'check_tree';
 
 sub find_commit {
     my ( $self, $commit, $blob_sha1 ) = @_;
-	if (check_tree($commit->tree, $blob_sha1)) {
-    	return $self->find_commit( $commit->parent, $blob_sha1 ) // $commit;
-	}
-	return;
+    if ( check_tree( $commit->tree, $blob_sha1 ) ) {
+        return $self->find_commit( $commit->parent, $blob_sha1 ) // $commit;
+    }
+    return;
 }
 
 sub find_entries {
@@ -42,15 +44,15 @@ sub find_entries {
                 push @output, $self->find_entries( $commit, $entry->object );
             }
             when ( $_->kind eq 'blob' ) {
-                push @output,
-                  Blawd::Entry->new(
+                push @output, $self->entry->new(
                     entry           => $_,
                     directory_entry => $entry,
                     commit => $self->find_commit( $commit, $entry->sha1 ),
-                  );
+                );
             }
         }
     }
+    @output = sort { $b->mtime cmp $a->mtime } @output;
     return @output;
 }
 

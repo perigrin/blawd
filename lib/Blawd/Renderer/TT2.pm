@@ -1,8 +1,8 @@
-package Blawd::View::TT2;
+package Blawd::Renderer::TT2;
 use Moose;
 use namespace::autoclean;
 
-with qw(Blawd::View::API);
+with qw(Blawd::Renderer::API);
 
 use Template;
 
