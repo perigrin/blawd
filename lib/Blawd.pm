@@ -28,6 +28,17 @@ sub _build_git {
     Git::PurePerl->new( directory => $self->directory );
 }
 
+has view => (
+    does       => 'Blawd::View::API',
+    handles    => 'Blawd::View::API',
+    lazy_build => 1,
+);
+
+sub _build_view {
+    my ($self) = @_;
+    Blawd::View::TT2->new();
+}
+
 sub run {
     my $self = shift;
     say $self->git->all_sha1s;
