@@ -64,7 +64,7 @@ This documentation refers to version 0.01.
 
 	use Blawd;
 	Blawd->new(directory => '/path/to/git', output => '/path/to/htdocs' );
-
+	
 =head1 DESCRIPTION
 
 =head1 SUBROUTINES / METHODS
