@@ -43,7 +43,8 @@ sub find_entries {
             when ( $_->kind eq 'blob' ) {
                 push @output,
                   Blawd::Entry->new(
-                    entry  => $_,
+                    entry           => $_,
+                    directory_entry => $entry,
                     commit => $self->find_commit( $commit, $entry->sha1 ),
                   );
             }

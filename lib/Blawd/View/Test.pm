@@ -7,8 +7,9 @@ with qw(Blawd::View::API);
 
 sub render_entry {
     my ( $self, $entry ) = @_;
-    say $entry->{commit}->author->name . ' - '
-      . $entry->{commit}->committed_time;
+    say $entry->filename . ': '
+      . $entry->commit->author->name . ' - '
+      . $entry->commit->committed_time;
 }
 
 __PACKAGE__->meta->make_immutable;
