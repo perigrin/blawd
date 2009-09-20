@@ -27,8 +27,9 @@ sub _build_template {
     Template->new( $self->config );
 }
 
-sub render {
+sub render_entry {
     my ( $self, $template, $data ) = @_;
+
     $self->template->process( $template, $data )
       || confess $self->template->error();
 }

@@ -5,43 +5,47 @@ use namespace::autoclean;
 
 our $VERSION = '0.01';
 
-use Git::PurePerl;
-use MooseX::Getopt;
+use Blawd::GitInterface;
 use MooseX::Types::Path::Class qw(Dir);
 
-has directory => (
+has repo => (
     isa      => Dir,
     is       => 'ro',
     coerce   => 1,
     required => 1
 );
 
-has git => (
-    isa        => 'Git::PurePerl',
-    is         => 'ro',
-    traits     => ['NoGetopt'],
+has view => (
+    isa     => 'Str',
+    is      => 'ro',
+    default => 'Blawd::View::Test'
+);
+
+has _git => (
+    isa        => 'Blawd::GitInterface',
+    accessor   => 'git',
     lazy_build => 1,
 );
 
-sub _build_git {
+sub _build__git {
     my $self = shift;
-    Git::PurePerl->new( directory => $self->directory );
+    Blawd::GitInterface->new( gitdir => $self->repo );
 }
-
-has view => (
+has _view_instance => (
     does       => 'Blawd::View::API',
     handles    => 'Blawd::View::API',
     lazy_build => 1,
 );
 
-sub _build_view {
+sub _build__view_instance {
     my ($self) = @_;
-    Blawd::View::TT2->new();
+    Class::MOP::load_class( $self->view );
+    $self->view->new();
 }
 
 sub run {
     my $self = shift;
-    say $self->git->all_sha1s;
+    $self->render( $self->git->find_entries );
 }
 
 __PACKAGE__->meta->make_immutable;
