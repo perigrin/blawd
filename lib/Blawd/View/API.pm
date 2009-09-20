@@ -6,7 +6,7 @@ requires qw(render_entry);
 
 sub render {
     my ( $self, @entries ) = @_;
-    $self->render_entry($_) for @entries;
+    $self->render_entry($_) for sort { $b->mtime cmp $a->mtime } @entries;
 }
 
 1;

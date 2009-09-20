@@ -25,9 +25,10 @@ memoize 'check_tree';
 
 sub find_commit {
     my ( $self, $commit, $blob_sha1 ) = @_;
-    return $commit if check_tree( $commit->tree, $blob_sha1 );
-    return $self->find_commit( $commit->parent ) if defined $commit->parent;
-    return;
+	if (check_tree($commit->tree, $blob_sha1)) {
+    	return $self->find_commit( $commit->parent, $blob_sha1 ) // $commit;
+	}
+	return;
 }
 
 sub find_entries {

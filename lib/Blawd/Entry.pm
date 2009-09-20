@@ -4,7 +4,11 @@ use namespace::autoclean;
 
 has blob => ( is => 'ro' );
 has directory_entry => ( is => 'ro', handles => ['filename'] );
-has commit => ( is => 'ro' );
+has commit => (
+    isa     => 'Git::PurePerl::Object::Commit',
+    is      => 'ro',
+    handles => { mtime => 'committed_time' }
+);
 
 __PACKAGE__->meta->make_immutable;
 1;
