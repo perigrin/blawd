@@ -1,8 +1,13 @@
 #!/usr/bin/env perl 
+use 5.10.0;
 use lib qw(lib);
-use Blawd;
-use MooseX::Declare;
 
-class Blawd::Script extends Blawd with MooseX::Getopt {};
+{
 
-Blawd::Script->new_with_options->run;
+    package Blawd::App;
+    use Moose;
+    extends 'Blawd';
+    with 'MooseX::Getopt';
+}
+
+Blawd::App->new_with_options->run;

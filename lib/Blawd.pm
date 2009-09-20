@@ -1,28 +1,36 @@
-use strict;
-use MooseX::Declare;
+package  Blawd;
+use Moose;
+use 5.10.0;
 
-class Blawed {
+use MooseX::Types::Path::Class qw(Dir);
+use Git::PurePerl;
+use namespace::autoclean;
+use MooseX::Getopt;
 
-    use MooseX::Types::Path::Class qw(Dir);
+has directory => (
+    isa      => Dir,
+    is       => 'ro',
+    coerce   => 1,
+    required => 1
+);
 
-    has directory => (
-        isa      => Dir,
-        is       => 'ro',
-        coerce   => 1,
-        required => 1
-    );
+has git => (
+    isa        => 'Git::PurePerl',
+    is         => 'ro',
+    traits     => ['NoGetopt'],
+    lazy_build => 1,
+);
 
-    has git => (
-        isa        => 'Git::PurePerl',
-        is         => 'ro',
-        lazy_build => 1,
-    );
-
-    method _build_git {
-        Git::PurePerl->new( directory => $self->directory );
-    }
-
-    method run {
-        confess $self->git->master->debug;
-    }
+sub _build_git {
+    my $self = shift;
+    Git::PurePerl->new( directory => $self->directory );
 }
+
+sub run {
+    my $self = shift;
+    say $self->git->all_sha1s;
+}
+
+__PACKAGE__->meta->make_immutable;
+1;
+__END__
