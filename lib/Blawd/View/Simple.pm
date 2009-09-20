@@ -1,4 +1,4 @@
-package Blawd::View::Test;
+package Blawd::View::Simple;
 use Moose;
 use 5.10.0;
 use namespace::autoclean;

@@ -18,7 +18,7 @@ has repo => (
 has view => (
     isa     => 'Str',
     is      => 'ro',
-    default => 'Blawd::View::Test'
+    default => 'Blawd::View::Simple'
 );
 
 has _git => (
