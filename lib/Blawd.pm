@@ -1,11 +1,13 @@
 package  Blawd;
 use Moose;
 use 5.10.0;
-
-use MooseX::Types::Path::Class qw(Dir);
-use Git::PurePerl;
 use namespace::autoclean;
+
+our $VERSION = '0.01';
+
+use Git::PurePerl;
 use MooseX::Getopt;
+use MooseX::Types::Path::Class qw(Dir);
 
 has directory => (
     isa      => Dir,
@@ -34,3 +36,44 @@ sub run {
 __PACKAGE__->meta->make_immutable;
 1;
 __END__
+
+=head1 NAME
+
+Blawd - A class to ...
+
+=head1 VERSION
+
+This documentation refers to version 0.01.
+
+=head1 SYNOPSIS
+
+	use Blawd;
+	Blawd->new(directory => '/path/to/git', output => '/path/to/htdocs' );
+
+=head1 DESCRIPTION
+
+=head1 SUBROUTINES / METHODS
+
+=head2 run()
+
+Generate a blog from the directory given
+
+=head1 DEPENDENCIES
+
+Moose, Git::PurePerl, namespace::autoclean, MooseX::Getopt
+
+=head1 BUGS AND LIMITATIONS
+
+None known currently, please email the author if you find any.
+
+=head1 AUTHOR
+
+Chris Prather (chris@prather.org)
+
+=head1 LICENCE
+
+Copyright 2009 by Chris Prather.
+
+This software is free.  It is licensed under the same terms as Perl itself.
+
+=cut
