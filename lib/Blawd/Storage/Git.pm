@@ -32,7 +32,7 @@ sub find_commit {
     # return nothing if we don't have it
     return unless check_tree( $commit->tree, $target );
 
-    # recurse into the tree and return the top of the tree
+    # recurse into the tree and return the parent who has it
     if ( $commit->parent ) {
         my $parent = $self->find_commit( $commit->parent, $target );
         return $parent if defined $parent;

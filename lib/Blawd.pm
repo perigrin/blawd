@@ -19,6 +19,7 @@ has repo => (
 has init => ( isa => 'Bool', is => 'ro', );
 
 has _storage => (
+    is         => 'ro',
     does       => 'Blawd::Storage::API',
     handles    => 'Blawd::Storage::API',
     lazy_build => 1,
@@ -31,6 +32,7 @@ sub _build__storage {
 }
 
 has _index => (
+    is         => 'ro',
     isa        => 'Blawd::Index',
     handles    => 'Blawd::Renderable',
     lazy_build => 1,
