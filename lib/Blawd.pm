@@ -5,7 +5,7 @@ use namespace::autoclean;
 
 our $VERSION = '0.01';
 
-use Blawd::GitInterface;
+use Blawd::Storage::Git;
 use Blawd::Index;
 use MooseX::Types::Path::Class qw(Dir);
 
@@ -16,15 +16,18 @@ has repo => (
     required => 1
 );
 
-has _git => (
-    isa        => 'Blawd::GitInterface',
-    accessor   => 'git',
+has init => ( isa => 'Bool', is => 'ro', );
+
+has _storage => (
+    does       => 'Blawd::Storage::API',
+    handles    => 'Blawd::Storage::API',
     lazy_build => 1,
 );
 
-sub _build__git {
+sub _build__storage {
     my $self = shift;
-    Blawd::GitInterface->new( gitdir => $self->repo );
+    return Blawd::Storage::Git->init( gitdir => $self->repo ) if $self->init;
+    return Blawd::Storage::Git->new( gitdir => $self->repo );
 }
 
 has _index => (
@@ -34,7 +37,7 @@ has _index => (
 );
 
 sub _build__index {
-    Blawd::Index->new( entries => [ shift->git->find_entries ] );
+    Blawd::Index->new( entries => [ shift->find_entries ] );
 }
 
 sub run {

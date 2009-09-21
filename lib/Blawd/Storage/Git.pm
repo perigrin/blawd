@@ -1,12 +1,11 @@
-package Blawd::GitInterface;
+package Blawd::Storage::Git;
 use Moose;
 use namespace::autoclean;
 extends qw(Git::PurePerl);
+with qw(Blawd::Storage::API);
 
 use Blawd::Entry;
 use Memoize;
-
-has entry => ( isa => 'Str', is => 'ro', default => 'Blawd::Entry' );
 
 sub check_tree {
     my ( $tree, $target ) = @_;
@@ -44,7 +43,7 @@ sub find_entries {
                 push @output, $self->find_entries( $commit, $entry->object );
             }
             when ( $_->kind eq 'blob' ) {
-                push @output, $self->entry->new(
+                push @output, $self->entry_class->new(
                     entry           => $_,
                     directory_entry => $entry,
                     commit => $self->find_commit( $commit, $entry->sha1 ),
