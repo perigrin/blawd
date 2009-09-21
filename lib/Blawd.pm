@@ -1,4 +1,4 @@
-package  Blawd;
+package Blawd;
 use Moose 0.90;
 use 5.10.0;
 use namespace::autoclean;
@@ -40,18 +40,14 @@ sub _build__index {
     Blawd::Index->new( entries => [ shift->find_entries ] );
 }
 
-sub run {
-    my $self = shift;
-    $self->render;
-}
-
 __PACKAGE__->meta->make_immutable;
 1;
+
 __END__
 
 =head1 NAME
 
-Blawd - A Git based Blog
+Blawd - A Quick and Dirty Blogging System
 
 =head1 VERSION
 
@@ -60,19 +56,31 @@ This documentation refers to version 0.01.
 =head1 SYNOPSIS
 
 	use Blawd;
-	Blawd->new(directory => '/path/to/git', output => '/path/to/htdocs' );
-	
+	Blawd->new( gitdir => '/var/git/repositories/myblog.git' );
+
 =head1 DESCRIPTION
 
-=head1 SUBROUTINES / METHODS
+Blawd is in it's infancy. The basic idea is to take MultiMarkdown files stored
+in a git revisioned tree, combine them with some Template Toolkit templates
+and generate a blog. Mostly I'm looking for an excuse to play with
+Git::PurePerl, and learn the git internals better.
 
-=head2 run()
+=head1 ATTRIBUTES
 
-Generate a blog from the directory given
+=head2 repo 
 
-=head1 DEPENDENCIES
+The directory that your Blog Repo lives in. Currently this is expecting a Git
+Repo.
 
-Moose, Git::PurePerl, namespace::autoclean, MooseX::Getopt
+=head2 init
+
+Create a new Git Repo (at the value of repo) to hold the Blog.
+
+=head1 METHODS
+
+=head2 render (method)
+
+Render the current index or entry.
 
 =head1 BUGS AND LIMITATIONS
 

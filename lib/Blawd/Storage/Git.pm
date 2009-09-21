@@ -4,8 +4,9 @@ use namespace::autoclean;
 extends qw(Git::PurePerl);
 with qw(Blawd::Storage::API);
 
-use Blawd::Entry;
 use Memoize;
+
+sub default_entry_class { 'Blawd::Entry::Git' }
 
 sub check_tree {
     my ( $tree, $target ) = @_;
