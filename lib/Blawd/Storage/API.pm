@@ -12,5 +12,9 @@ has entry_class => (
 
 sub default_entry_class { 'Blawd::Entry' }
 
+sub new_entry {
+    shift->entry_class->new(@_);
+}
+
 1;
 __END__

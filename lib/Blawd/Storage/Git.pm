@@ -29,7 +29,11 @@ memoize 'check_tree';
 sub find_commit {
     my ( $self, $commit, $blob_sha1 ) = @_;
     if ( check_tree( $commit->tree, $blob_sha1 ) ) {
-        return $self->find_commit( $commit->parent, $blob_sha1 ) // $commit;
+        return $commit unless $commit->parent;
+        if ( my $parent = $self->find_commit( $commit->parent, $blob_sha1 ) ) {
+            return $parent;
+        }
+        return $commit;
     }
     return;
 }
@@ -45,11 +49,12 @@ sub find_entries {
                 push @output, $self->find_entries( $commit, $entry->object );
             }
             when ( $_->kind eq 'blob' ) {
-                push @output, $self->entry_class->new(
+                push @output,
+                  $self->new_entry(
                     entry           => $_,
                     directory_entry => $entry,
                     commit => $self->find_commit( $commit, $entry->sha1 ),
-                );
+                  );
             }
         }
     }
