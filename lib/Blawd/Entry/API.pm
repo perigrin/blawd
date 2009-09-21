@@ -4,6 +4,7 @@ use namespace::autoclean;
 
 with qw( Blawd::Renderable );
 requires qw(
+  author
   filename
   content
   mtime

@@ -10,8 +10,10 @@ has commit => (
     isa     => 'Git::PurePerl::Object::Commit',
     is      => 'ro',
     handles => {
-        mtime => 'committed_time',
-        ctime => 'authored_time',
+        author    => 'author',
+        committer => 'commiter',
+        mtime     => 'committed_time',
+        ctime     => 'authored_time',
     }
 );
 

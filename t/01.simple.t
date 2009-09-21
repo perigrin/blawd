@@ -57,6 +57,8 @@ is( scalar @entries, 1, 'got only one post' );
 ok( $_->does('Blawd::Entry::API'), 'does Blawd::Entry::API' ) for @entries;
 is( $entries[0]->mtime, DateTime->from_epoch( epoch => 1240341682 ),
     'right mtime' );
+is($entries[0]->content, 'Hello World', 'right content');
+is($entries[0]->author->name, 'Flexo', 'right author');
 done_testing;
 
 dir($directory)->rmtree;
