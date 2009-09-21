@@ -4,6 +4,7 @@ use namespace::autoclean;
 extends qw(Git::PurePerl);
 with qw(Blawd::Storage::API);
 
+use Blawd::Entry::Git;
 use Memoize;
 
 sub default_entry_class { 'Blawd::Entry::Git' }

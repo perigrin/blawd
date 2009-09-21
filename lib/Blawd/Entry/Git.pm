@@ -1,6 +1,7 @@
 package Blawd::Entry::Git;
 use Moose;
 use namespace::autoclean;
+
 extends qw(Blawd::Entry);
 
 has blob => ( is => 'ro' );
