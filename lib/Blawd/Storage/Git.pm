@@ -27,15 +27,19 @@ sub check_tree {
 memoize 'check_tree';
 
 sub find_commit {
-    my ( $self, $commit, $blob_sha1 ) = @_;
-    if ( check_tree( $commit->tree, $blob_sha1 ) ) {
-        return $commit unless $commit->parent;
-        if ( my $parent = $self->find_commit( $commit->parent, $blob_sha1 ) ) {
-            return $parent;
-        }
-        return $commit;
+    my ( $self, $commit, $target ) = @_;
+
+    # return nothing if we don't have it
+    return unless check_tree( $commit->tree, $target );
+
+    # recurse into the tree and return the top of the tree
+    if ( $commit->parent ) {
+        my $parent = $self->find_commit( $commit->parent, $target );
+        return $parent if defined $parent;
     }
-    return;
+
+    # default to returning ourselves if all else fails, we know we have it
+    return $commit;
 }
 
 sub find_entries {
