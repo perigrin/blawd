@@ -5,11 +5,16 @@ use namespace::autoclean;
 
 with qw(Blawd::Renderer::API);
 
-sub render_entry {
+sub render {
     my ( $self, $entry ) = @_;
-    say $entry->filename . ': '
-      . $entry->commit->author->name . ' - '
-      . $entry->commit->committed_time;
+    given ( my $e = $entry ) {
+        when ( $e->can('content') ) { return $_->content }
+        when ( $e->can('entries') ) {
+            return join "\n", map { $_->render } $e->entries;
+        }
+        default { return '' };
+    }
+
 }
 
 __PACKAGE__->meta->make_immutable;

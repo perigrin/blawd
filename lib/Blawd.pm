@@ -31,14 +31,14 @@ sub _build__storage {
     return Blawd::Storage::Git->new( gitdir => $self->repo );
 }
 
-has _index => (
+has index => (
     is         => 'ro',
     isa        => 'Blawd::Index',
     handles    => 'Blawd::Renderable',
     lazy_build => 1,
 );
 
-sub _build__index {
+sub _build_index {
     Blawd::Index->new( entries => [ shift->find_entries ] );
 }
 

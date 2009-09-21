@@ -3,6 +3,7 @@ use Moose::Role;
 use namespace::autoclean;
 
 with qw( Blawd::Renderable );
+
 requires qw(
   author
   filename
@@ -10,7 +11,6 @@ requires qw(
   mtime
   ctime
 );
-sub render { $_[0]->render_entry( $_[0] ) }
 
 1;
 __END__
