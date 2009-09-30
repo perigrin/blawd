@@ -18,6 +18,12 @@ has repo => (
 
 has init => ( isa => 'Bool', is => 'ro', );
 
+has renderer => (
+    isa     => 'Str',
+    is      => 'ro',
+    default => 'Blawd::Renderer::Simple',
+);
+
 has storage => (
     is         => 'ro',
     does       => 'Blawd::Storage::API',
@@ -27,8 +33,14 @@ has storage => (
 
 sub _build_storage {
     my $self = shift;
-    return Blawd::Storage::Git->init( gitdir => $self->repo ) if $self->init;
-    return Blawd::Storage::Git->new( gitdir => $self->repo );
+
+    my %conf = (
+        renderer => $self->renderer,
+        gitdir   => $self->repo,
+    );
+
+    return Blawd::Storage::Git->init(%conf) if $self->init;
+    return Blawd::Storage::Git->new(%conf);
 }
 
 has index => (
@@ -39,8 +51,11 @@ has index => (
 );
 
 sub _build_index {
+    my $self = shift;
     Blawd::Index->new(
-        entries => [ $_[0]->find_entries( $_[0]->blawd_branch ) ] );
+        renderer => $self->renderer,
+        entries  => [ $self->find_entries( $self->blawd_branch ) ]
+    );
 }
 
 sub refresh {

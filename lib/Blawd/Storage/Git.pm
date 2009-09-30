@@ -53,6 +53,7 @@ sub find_entries {
             when ( $_->kind eq 'blob' ) {
                 push @output,
                   $self->new_entry(
+                    renderer        => $self->renderer,
                     blob            => $_,
                     directory_entry => $entry,
                     commit => $self->find_commit( $commit, $entry->sha1 ),

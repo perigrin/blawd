@@ -3,9 +3,9 @@ use Moose::Role;
 use namespace::autoclean;
 
 has renderer => (
-    isa     => 'Str',
-    is      => 'ro',
-    default => 'Blawd::Renderer::Simple',
+    isa      => 'Str',
+    is       => 'ro',
+    required => 1,
 );
 
 has _renderer_instance => (
