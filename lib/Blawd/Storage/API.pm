@@ -4,6 +4,8 @@ use namespace::autoclean;
 
 requires 'find_entries';
 
+sub blawd_branch { return  shift->master }
+
 has entry_class => (
     isa     => 'Str',
     is      => 'ro',
