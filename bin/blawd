@@ -1,13 +1,4 @@
 #!/usr/bin/env perl 
 use 5.10.0;
 use lib qw(lib);
-
-{
-
-    package Blawd::App;
-    use Moose;
-    extends 'Blawd';
-    with 'MooseX::Getopt';
-}
-
-say Blawd::App->new_with_options->index->render;
+use Blawd::Cmd -run;
