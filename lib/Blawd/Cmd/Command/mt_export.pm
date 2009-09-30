@@ -42,6 +42,7 @@ sub _build_entry_query {
 		SELECT entry_title, entry_text
 		FROM mt_entry
 		WHERE entry_blog_id = ?
+		ORDER BY entry_authored_on ASC 
 	}
 }
 
@@ -79,7 +80,7 @@ sub run {
         $name =~ s{ ::? | \s | [/)(] }{-}gx;
         say $name;
         $name = 'untitled' . ++$i unless $name;
-        dir( $self->repo )->file($name)->openw->print( $entry->{text} );
+        dir( $self->repo )->file($name)->openw->print( $entry->{entry_text} );
         $self->git->add($name);
         $self->git->commit( { message => "added $name" } );
     }

@@ -10,7 +10,7 @@ has _list => (
     required => 1,
     init_arg => 'entries',
     handles  => {
-        entries => 'sort',
+        entries => 'elements',
         size    => 'count',
     },
 );

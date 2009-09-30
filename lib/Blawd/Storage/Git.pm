@@ -29,15 +29,14 @@ memoize 'check_tree';
 
 sub find_commit {
     my ( $self, $commit, $target ) = @_;
-    die "Couldn't find commit for $target"
-      unless check_tree( $commit->tree, $target );
 
-    try {
-        $self->find_commit( $commit->parent, $target );
+    return $commit unless $commit->parent;
+    my $current = $commit;
+    while ( my $next = $current->parent ) {
+        if ( check_tree( $next->tree, $target ) ) { $current = $next }
+        else                                      { return $current }
     }
-    catch {
-        $commit;
-    }
+    return $current;
 }
 
 sub find_entries {
@@ -61,7 +60,6 @@ sub find_entries {
             }
         }
     }
-    @output = sort { $b->mtime cmp $a->mtime } @output;
     return @output;
 }
 
