@@ -1,5 +1,5 @@
 package Blawd;
-use Moose 0.90;
+use Moose 0.92;
 use 5.10.0;
 use namespace::autoclean;
 

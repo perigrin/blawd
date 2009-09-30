@@ -24,6 +24,8 @@ is( $blog->_storage->all_objects->all, 0, 'no posts' );
 our $hello;
 {
     my $blob = Blob->new( content => 'Hello World' );
+	is( $blob->sha1, '5e1c309dae7f45e0f39b1bf3ac3cd9db12e7d689', 'right sha1' );
+
     $blog->_storage->put_object($blob);
     $hello = DirectoryEntry->new(
         mode     => '100644',
@@ -51,6 +53,7 @@ our $hello;
 
     $blog->_storage->put_object($commit);
 }
+
 
 # TEST THE POST
 ok( my @entries = $blog->find_entries, 'got entries' );
@@ -86,32 +89,38 @@ is( $blog->index->render, "Hello World", 'index renders' );
     my $commit = Commit->new(
         tree   => $tree->sha1,
         author => Actor->new(
-            name  => 'Flexo',
-            email => 'flexo@example.org',
+            name  => 'Fry',
+            email => 'fry@example.org',
         ),
-        authored_time => DateTime->from_epoch( epoch => 1240341691 ),
+        authored_time => DateTime->from_epoch( epoch => 1240341782 ),
         committer     => Actor->new(
             name  => 'Bender',
             email => 'bender@example.org',
         ),
-        committed_time => DateTime->from_epoch( epoch => 1240341692 ),
+        committed_time => DateTime->from_epoch( epoch => 1240341782 ),
         comment        => 'Post',
     );
     $blog->_storage->put_object($commit);
 }
 
-ok($blog->clear_index, 'cleared the index');
+ok( $blog->clear_index, 'cleared the index' );
 ok( @entries = $blog->find_entries, 'got entries' );
 is( scalar @entries, 2, 'got two posts' );
 ok( $_->does('Blawd::Entry::API'), 'does Blawd::Entry::API' ) for @entries;
-is( $entries[-1]->mtime, DateTime->from_epoch( epoch => 1240341692 ),
+is( $entries[-1]->mtime, DateTime->from_epoch( epoch => 1240341682 ),
     'right mtime' );
 is( $entries[-1]->author->name, 'Flexo',       'right author' );
 is( $entries[-1]->content,      'Hello World', 'right content' );
 is( $entries[-1]->render,       'Hello World', 'render correctly' );
 
+is( $entries[0]->mtime, DateTime->from_epoch( epoch => 1240341682 ),
+    'right mtime' );
+is( $entries[0]->author->name, 'Fry',           'right author' );
+is( $entries[0]->content,      'Goodbye World', 'right content' );
+is( $entries[0]->render,       'Goodbye World', 'render correctly' );
+
 isa_ok( $blog->index, 'Blawd::Index' );
-is($blog->index->size, 2, 'index is the right size');
+is( $blog->index->size, 2, 'index is the right size' );
 is( $blog->index->render, "Hello World\nGoodbye World", 'index renders' );
 
 done_testing;

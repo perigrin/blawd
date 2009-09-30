@@ -5,6 +5,7 @@ extends qw(Git::PurePerl);
 with qw(Blawd::Storage::API);
 
 use Blawd::Entry::Git;
+use Try::Tiny;
 use Memoize;
 
 sub default_entry_class { 'Blawd::Entry::Git' }
@@ -28,18 +29,15 @@ memoize 'check_tree';
 
 sub find_commit {
     my ( $self, $commit, $target ) = @_;
+    die "Couldn't find commit for $target"
+      unless check_tree( $commit->tree, $target );
 
-    # return nothing if we don't have it
-    return unless check_tree( $commit->tree, $target );
-
-    # recurse into the tree and return the parent who has it
-    if ( $commit->parent ) {
-        my $parent = $self->find_commit( $commit->parent, $target );
-        return $parent if defined $parent;
+    try {
+        $self->find_commit( $commit->parent, $target );
     }
-
-    # default to returning ourselves if all else fails, we know we have it
-    return $commit;
+    catch {
+        $commit;
+    }
 }
 
 sub find_entries {
