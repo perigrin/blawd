@@ -126,7 +126,7 @@ is( $entries[0]->render,       'Goodbye World', 'render correctly' );
 
 isa_ok( $blog->index, 'Blawd::Index' );
 is( $blog->index->size, 2, 'index is the right size' );
-is( $blog->index->render, "Hello World\nGoodbye World", 'index renders' );
+is( $blog->index->render, "Goodbye World\nHello World", 'index renders' );
 
 done_testing;
 
