@@ -40,7 +40,7 @@ is( $entries[0]->content, 'Hello World',          'right content' );
 is( $entries[0]->render,  "<p>Hello World</p>\n", 'render correctly' );
 
 isa_ok( $blog->index, 'Blawd::Index' );
-is( $blog->index->render, "<p>Hello World</p>\n", 'index renders' );
+like( $blog->index->render, qr"<p>Hello World</p>\n", 'index renders' );
 
 my $bye = dir($directory)->file('goodbye');
 $bye->openw->print('Goodbye World');
@@ -79,7 +79,7 @@ isa_ok( $blog->index, 'Blawd::Index' );
 is( $blog->index->size, 2, 'index is the right size' );
 like(
     $blog->index->render,
-    qr|<p>Goodbye World</p>\s+<p>Hello World</p>|m,
+    qr|<div class="entry"><p>Goodbye World</p>\s+</div><div class="entry"><p>Hello World</p>\s+</div>|m,
     'index renders'
 );
 

@@ -22,16 +22,12 @@ sub _build_markdown_instance {
 
 sub render {
     my ( $self, $entry ) = @_;
-    given ( my $e = $entry ) {
-        when ( $e->can('content') ) {
-            return $self->markdown( $e->content );
-        }
-        when ( $e->can('entries') ) {
-            return join "\n", map { $_->render } $e->entries;
-        }
-        default { return '' };
-    }
+    return $self->markdown( "Format: complete\n\n" . $entry->content );
+}
 
+sub render_as_fragment {
+    my ( $self, $entry ) = @_;
+    return $self->markdown( $entry->content );
 }
 
 __PACKAGE__->meta->make_immutable;

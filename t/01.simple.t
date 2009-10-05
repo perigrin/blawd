@@ -126,8 +126,11 @@ like( $entries[0]->render, qr'Goodbye World', 'render correctly' );
 
 isa_ok( $blog->index, 'Blawd::Index' );
 is( $blog->index->size, 2, 'index is the right size' );
-like( $blog->index->render, qr|<p>Goodbye World</p>\s+<p>Hello World</p>|m,
-    , 'index renders' );
+like(
+    $blog->index->render,
+qr|<div class="entry"><p>Goodbye World</p>\s+</div><div class="entry"><p>Hello World</p>\s+</div>|m,
+    'index renders'
+);
 
 done_testing;
 

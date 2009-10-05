@@ -20,12 +20,12 @@ has content => (
 );
 sub _build_content { shift->file->slurp }
 
-has date => ( isa => DateTime, is => 'ro', lazy_build => 1 );
+has date => ( isa => DateTime, is => 'ro', coerce => 1, lazy_build => 1 );
 
 sub _build_date {
     my $c = shift->content;
-    $c =~ /^Date: (.*)\s*$/;
-    return to_DateTime($1) if $1;
+    $c =~ m/^Date:\s+(.*)/m;
+    return to_DateTime($1);
 }
 
 has author => (
@@ -43,12 +43,12 @@ sub _build_author {
 sub BUILD {
     my ( $self, $p ) = @_;
     return unless $p->{commit};
-    unless ( $self->content =~ /^Author:/ ) {
+    unless ( $self->content =~ /^Author:/m ) {
         $self->meta->get_attribute('author')
           ->set_value( $self, $p->{commit}->author->name );
     }
 
-    unless ( $self->content =~ /^Date:/ ) {
+    unless ( $self->content =~ /^Date:/m ) {
         $self->meta->get_attribute('date')
           ->set_value( $self, $p->{commit}->committed_time );
     }

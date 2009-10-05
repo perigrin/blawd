@@ -80,9 +80,9 @@ sub run {
         chomp( my $name = lc $entry->{entry_title} );
         $name =~ s/["'<?!>#,*]|\.{3}$//g;
         $name =~ s{ ::? | \s | [/)(] }{-}gx;
-        say $name;
+        warn $name;
         $name = 'untitled' . ++$i unless $name;
-        dir( $self->repo )->file($name)->openw->print( <<"END_ENTRY" ); \
+        dir( $self->repo )->file($name)->openw->print( <<"END_ENTRY" );
 Title: $entry->{entry_title}  
 Author: ${\$self->author}
 Date: $entry->{entry_authored_on}
@@ -90,7 +90,7 @@ Date: $entry->{entry_authored_on}
 $entry->{entry_text}
 END_ENTRY
 
-          $self->git->add($name);
+        $self->git->add($name);
     }
     $self->git->commit( { message => "import blog" } );
 
