@@ -7,6 +7,8 @@ use DBI;
 use Path::Class;
 use Git::Wrapper;
 
+has author => ( isa => 'Str', is => 'ro', );
+
 has repo => (
     isa      => 'Str',
     is       => 'ro',
@@ -39,7 +41,7 @@ sub _build_entry_query {
     my ($self) = @_;
 
     q{
-		SELECT entry_title, entry_text
+		SELECT *
 		FROM mt_entry
 		WHERE entry_blog_id = ?
 		ORDER BY entry_authored_on ASC 
@@ -80,10 +82,18 @@ sub run {
         $name =~ s{ ::? | \s | [/)(] }{-}gx;
         say $name;
         $name = 'untitled' . ++$i unless $name;
-        dir( $self->repo )->file($name)->openw->print( $entry->{entry_text} );
-        $self->git->add($name);
-        $self->git->commit( { message => "added $name" } );
+        dir( $self->repo )->file($name)->openw->print( <<"END_ENTRY" ); \
+Title: $entry->{entry_title}  
+Author: ${\$self->author}
+Date: $entry->{entry_authored_on}
+
+$entry->{entry_text}
+END_ENTRY
+
+          $self->git->add($name);
     }
+    $self->git->commit( { message => "import blog" } );
+
 }
 
 __PACKAGE__->meta->make_immutable;

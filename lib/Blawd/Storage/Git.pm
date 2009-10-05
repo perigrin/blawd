@@ -4,11 +4,8 @@ use namespace::autoclean;
 extends qw(Git::PurePerl);
 with qw(Blawd::Storage::API);
 
-use Blawd::Entry::Git;
 use Try::Tiny;
 use Memoize;
-
-sub default_entry_class { 'Blawd::Entry::Git' }
 
 sub check_tree {
     my ( $tree, $target ) = @_;
@@ -29,12 +26,15 @@ memoize 'check_tree';
 
 sub find_commit {
     my ( $self, $commit, $target ) = @_;
+    return $commit;
 
     return $commit unless $commit->parent;
     my $current = $commit;
+    my %seen;
     while ( my $next = $current->parent ) {
-        if ( check_tree( $next->tree, $target ) ) { $current = $next }
-        else                                      { return $current }
+        warn "seen" if $seen{ $next->sha1 }++;
+        return $current unless check_tree( $next->tree, $target );
+        $current = $next;
     }
     return $current;
 }
@@ -52,10 +52,9 @@ sub find_entries {
             when ( $_->kind eq 'blob' ) {
                 push @output,
                   $self->new_entry(
-                    renderer        => $self->renderer,
-                    blob            => $_,
-                    directory_entry => $entry,
-                    commit => $self->find_commit( $commit, $entry->sha1 ),
+                    content  => $_->content,
+                    filename => $entry->filename,
+                    commit   => $commit,
                   );
             }
         }

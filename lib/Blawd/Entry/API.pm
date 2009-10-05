@@ -8,8 +8,7 @@ requires qw(
   author
   filename
   content
-  mtime
-  ctime
+  date
 );
 
 1;

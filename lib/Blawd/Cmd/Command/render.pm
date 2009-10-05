@@ -17,7 +17,7 @@ has init => ( isa => 'Bool', is => 'ro', );
 has renderer => (
     isa     => 'Str',
     is      => 'ro',
-    default => 'Blawd::Renderer::Simple',
+    default => 'Blawd::Renderer::MultiMarkdown',
 );
 
 has blawd => ( isa => 'Str', is => 'ro', );

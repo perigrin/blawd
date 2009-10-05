@@ -1,6 +1,7 @@
 package Blawd::Storage::API;
 use Moose::Role;
 use namespace::autoclean;
+use Blawd::Entry::MultiMarkdown;
 
 requires 'find_entries';
 
@@ -14,7 +15,9 @@ has entry_class => (
     builder => 'default_entry_class'
 );
 
-sub default_entry_class { 'Blawd::Entry' }
+sub default_entry_class {
+    'Blawd::Entry::MultiMarkdown';
+}
 
 sub new_entry {
     shift->entry_class->new(@_);

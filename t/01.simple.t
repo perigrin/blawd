@@ -60,13 +60,13 @@ $blog->storage->put_object($commit);
 ok( my @entries = $blog->find_entries, 'got entries' );
 is( scalar @entries, 1, 'got only one post' );
 ok( $_->does('Blawd::Entry::API'), 'does Blawd::Entry::API' ) for @entries;
-is( $entries[0]->mtime,        $hello_mtime,  'right mtime' );
-is( $entries[0]->author->name, 'Flexo',       'right author' );
-is( $entries[0]->content,      'Hello World', 'right content' );
-is( $entries[0]->render,       'Hello World', 'render correctly' );
+is( $entries[0]->date,    $hello_mtime,  'right mtime' );
+is( $entries[0]->author,  'Flexo',       'right author' );
+is( $entries[0]->content, 'Hello World', 'right content' );
+like( $entries[0]->render, qr'Hello World', 'render correctly' );
 
 isa_ok( $blog->index, 'Blawd::Index' );
-is( $blog->index->render, "Hello World", 'index renders' );
+like( $blog->index->render, qr"Hello World", 'index renders' );
 
 # SET UP A SECOND POST
 
@@ -113,20 +113,21 @@ ok( $_->does('Blawd::Entry::API'), 'does Blawd::Entry::API' ) for @entries;
 TODO: {
     local $TODO =
       q[I think I'm doing the directory entry stuff in Git::PurePerl wrong];
-    is( $entries[-1]->mtime,        $hello_mtime, 'right mtime' );
-    is( $entries[-1]->author->name, 'Flexo',      'right author' );
+    is( $entries[-1]->date,   $hello_mtime, 'right mtime' );
+    is( $entries[-1]->author, 'Flexo',      'right author' );
 }
 is( $entries[-1]->content, 'Hello World', 'right content' );
-is( $entries[-1]->render,  'Hello World', 'render correctly' );
+like( $entries[-1]->render, qr'Hello World', 'render correctly' );
 
-is( $entries[0]->mtime,        $bye_mtime,      'right mtime' );
-is( $entries[0]->author->name, 'Fry',           'right author' );
-is( $entries[0]->content,      'Goodbye World', 'right content' );
-is( $entries[0]->render,       'Goodbye World', 'render correctly' );
+is( $entries[0]->date,    $bye_mtime,      'right mtime' );
+is( $entries[0]->author,  'Fry',           'right author' );
+is( $entries[0]->content, 'Goodbye World', 'right content' );
+like( $entries[0]->render, qr'Goodbye World', 'render correctly' );
 
 isa_ok( $blog->index, 'Blawd::Index' );
 is( $blog->index->size, 2, 'index is the right size' );
-is( $blog->index->render, "Goodbye World\nHello World", 'index renders' );
+like( $blog->index->render, qr|<p>Goodbye World</p>\s+<p>Hello World</p>|m,
+    , 'index renders' );
 
 done_testing;
 
