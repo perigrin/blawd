@@ -3,36 +3,16 @@ use Moose;
 use MooseX::Types::Path::Class qw(File);
 use MooseX::Types::DateTimeX qw(DateTime);
 use namespace::autoclean;
-use Blawd::Renderer::MultiMarkdown;
 
-has renderer => ( isa => 'Str', is => 'ro', lazy_build => 1 );
 sub _build_renderer { 'Blawd::Renderer::MultiMarkdown' }
 
-has filename => ( isa => 'Str', is => 'ro', required => 1, );
-
-has file => ( isa => File, is => 'ro', lazy_build => 1 );
-sub _build_file { file( shift->filename ) }
-
-has content => (
-    isa        => 'Str',
-    is         => 'ro',
-    lazy_build => 1,
-);
-sub _build_content { shift->file->slurp }
-
-has date => ( isa => DateTime, is => 'ro', coerce => 1, lazy_build => 1 );
+sub _build_content { file( shift->filename )->slurp }
 
 sub _build_date {
     my $c = shift->content;
     $c =~ m/^Date:\s+(.*)/m;
     return to_DateTime($1);
 }
-
-has author => (
-    isa        => 'Str',
-    is         => 'ro',
-    lazy_build => 1,
-);
 
 sub _build_author {
     shift->content =~ /^Author: (.*)\s*$/;

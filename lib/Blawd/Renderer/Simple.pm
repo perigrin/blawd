@@ -5,6 +5,8 @@ use namespace::autoclean;
 
 with qw(Blawd::Renderer::API);
 
+sub render_as_fragment { shift->render }
+
 sub render {
     my ( $self, $entry ) = @_;
     given ( my $e = $entry ) {

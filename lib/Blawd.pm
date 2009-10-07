@@ -53,6 +53,7 @@ has index => (
 sub _build_index {
     my $self = shift;
     Blawd::Index->new(
+        filename => 'index.html',
         renderer => $self->renderer,
         entries  => [ $self->find_entries( $self->blawd_branch ) ]
     );

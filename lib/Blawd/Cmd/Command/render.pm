@@ -12,8 +12,6 @@ has repo => (
     required => 1
 );
 
-has init => ( isa => 'Bool', is => 'ro', );
-
 has renderer => (
     isa     => 'Str',
     is      => 'ro',
@@ -22,13 +20,27 @@ has renderer => (
 
 has blawd => ( isa => 'Str', is => 'ro', );
 
+has output => (
+    isa        => 'IO::Handle',
+    is         => 'ro',
+    lazy_build => 1,
+);
+
+sub _build_output {
+    my ($self) = @_;
+    my $io = IO::Handle->new;
+    $io->fdopen( fileno(STDOUT), 'w' );
+    return $io;
+}
+
 sub run {
     my $self = shift;
-    say Blawd->new(
-        repo     => $self->repo,
-        init     => $self->init,
-        renderer => $self->renderer,
-    )->index->render;
+    $self->output->say(
+        Blawd->new(
+            repo     => $self->repo,
+            renderer => $self->renderer,
+          )->index->render
+    );
 }
 
 __PACKAGE__->meta->make_immutable;

@@ -3,10 +3,12 @@ use Moose::Role;
 use namespace::autoclean;
 
 has renderer => (
-    isa      => 'Str',
-    is       => 'ro',
-    required => 1,
+    isa        => 'Str',
+    is         => 'ro',
+    lazy_build => 1,
 );
+
+sub _build_renderer { 'Blawd::Renderer::Simple' }
 
 has _renderer_instance => (
     is         => 'ro',
