@@ -55,7 +55,7 @@ sub _build_indexes {
     my $self = shift;
     [
         Blawd::Index->new(
-            filename => '/index.html',
+            filename => 'index.html',
             renderer => $self->renderer,
             entries  => $self->entries
         )

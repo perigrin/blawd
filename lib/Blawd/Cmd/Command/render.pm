@@ -25,6 +25,7 @@ has blawd => (
 );
 
 sub _build_blawd {
+    my $self = shift;
     Blawd->new(
         repo       => $self->repo,
         output_dir => $self->output_dir,
@@ -34,7 +35,7 @@ sub _build_blawd {
 
 sub run {
     my $self = shift;
-    $_->render_to_file
+    $_->render_to_file( $self->output_dir . '/' . $_->filename )
       for ( @{ $self->blawd->indexes }, @{ $self->blawd->entries } );
 }
 

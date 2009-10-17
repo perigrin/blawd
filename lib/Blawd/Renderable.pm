@@ -29,7 +29,6 @@ sub render_as_fragment { $_[0]->_renderer_instance->render_as_fragment(@_) }
 
 sub render_to_file {
     my ( $self, $name ) = @_;
-    $name //= $self->filename;
     to_file($name)->openw->print( $self->render );
 }
 
