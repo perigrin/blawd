@@ -87,6 +87,7 @@ Title: $entry->{entry_title}
 Author: ${\$self->author}
 Date: $entry->{entry_authored_on}
 
+# $entry->{entry_title}
 $entry->{entry_text}
 END_ENTRY
 

@@ -11,11 +11,18 @@ sub _build_content { file( shift->filename )->slurp }
 sub _build_date {
     my $c = shift->content;
     $c =~ m/^Date:\s+(.*)/m;
-    return to_DateTime($1);
+    return to_DateTime($1) if $1;
+    return 'Unknown';
 }
 
 sub _build_author {
-    shift->content =~ /^Author: (.*)\s*$/;
+    shift->content =~ /^Author: (.*)\s*$/m;
+    return $1 if $1;
+    return 'Unknown';
+}
+
+sub _build_title {
+    $_[0]->content =~ /^Title: (.*)\s*$/m;
     return $1 if $1;
     return 'Unknown';
 }
@@ -23,6 +30,11 @@ sub _build_author {
 sub BUILD {
     my ( $self, $p ) = @_;
     return unless $p->{commit};
+    unless ( $self->content =~ /^Title:/m ) {
+        $self->meta->get_attribute('title')
+          ->set_value( $self, $p->{commit}->filename );
+    }
+
     unless ( $self->content =~ /^Author:/m ) {
         $self->meta->get_attribute('author')
           ->set_value( $self, $p->{commit}->author->name );

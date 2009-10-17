@@ -18,7 +18,7 @@ has date => (
     lazy_build => 1
 );
 
-has content => (
+has [qw(title content)] => (
     isa        => 'Str',
     is         => 'ro',
     lazy_build => 1,
@@ -30,6 +30,7 @@ requires qw(
   _build_author
   _build_date
   _build_content
+  _build_title
 );
 
 1;

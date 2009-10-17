@@ -30,8 +30,8 @@ has blawd => (
 sub _build_blawd {
     my $self = shift;
     Blawd->new(
-        repo       => $self->repo,
-        renderer   => $self->renderer,
+        repo     => $self->repo,
+        renderer => $self->renderer,
     );
 }
 
@@ -61,7 +61,22 @@ sub _build__http_engine {
 
 sub handle_request {
     my ( $self, $req ) = @_;
-    HTTP::Engine::Response->new( body => $self->blawd->index->render );
+    given ( $req->path ) {
+        $_ =~ s|^/||;
+        when ( $self->blawd->get_entry($_) ) {
+            my $entry = $self->blawd->get_entry($_);
+            return HTTP::Engine::Response->new( body => $entry->render );
+        }
+        when ( $self->blawd->get_index($_) ) {
+            my $index = $self->blawd->get_index($_);
+            return HTTP::Engine::Response->new( body => $index->render );
+        }
+        default {
+            return HTTP::Engine::Response->new(
+                body => $self->blawd->index->render );
+        }
+    }
+
 }
 
 __PACKAGE__->meta->make_immutable;

@@ -48,26 +48,48 @@ has indexes => (
     is         => 'ro',
     lazy_build => 1,
     traits     => ['Array'],
-    handles    => { index => [ 'get', '0' ] },
+    handles    => {
+        index      => [ 'get', '0' ],
+        find_index => ['grep'],
+    },
 );
 
 sub _build_indexes {
     my $self = shift;
     [
         Blawd::Index->new(
-            filename => 'index.html',
+            filename => 'index',
             renderer => $self->renderer,
             entries  => $self->entries
+        ),
+        Blawd::Index->new(
+            filename => 'perl',
+            renderer => $self->renderer,
+            entries =>
+              [ $self->find_entry( sub { $_->content =~ m/\bperl\b/; } ) ],
         )
     ];
+}
+
+sub get_index {
+    my ( $self, $name ) = @_;
+    my ($entry) = $self->find_index( sub { $_->filename eq $name } );
+    return $entry;
 }
 
 has entries => (
     isa        => 'ArrayRef[Blawd::Entry::MultiMarkdown]',
     is         => 'ro',
     lazy_build => 1,
+    traits     => ['Array'],
+    handles    => { find_entry => ['grep'], }
 );
-use Data::Dumper;
+
+sub get_entry {
+    my ( $self, $name ) = @_;
+    my ($entry) = $self->find_entry( sub { $_->filename eq $name } );
+    return $entry;
+}
 
 sub _build_entries {
     my ($self) = @_;

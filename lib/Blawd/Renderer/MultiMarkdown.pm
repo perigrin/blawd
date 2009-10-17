@@ -17,17 +17,21 @@ sub _build_markdown_instance {
     Text::MultiMarkdown->new(
         document_format => 1,
         use_metadata    => 1,
+        strip_metadata  => 1,
     );
 }
 
 sub render {
     my ( $self, $entry ) = @_;
-    return $self->markdown( "Format: complete\n\n" . $entry->content );
+    return $self->markdown(
+"Format: complete\n${\$entry->content}\nBy: $entry->{author} on $entry->{date}"
+    );
 }
 
 sub render_as_fragment {
     my ( $self, $entry ) = @_;
-    return $self->markdown( $entry->content );
+    return $self->markdown(
+        $entry->content . "\nBy: ${\$entry->author} on $entry->{date}" );
 }
 
 __PACKAGE__->meta->make_immutable;

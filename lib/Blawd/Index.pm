@@ -21,8 +21,16 @@ sub _build_author { 'Unknown' }
 sub _build_date   { DateTime->now }
 
 sub _build_content {
-    join '', map { qq[<div class="entry">${\$_->render_as_fragment}</div>] }
-      grep { defined $_ } shift->entries;
+    join '', map {
+        my $title = $_->title;
+        my $text  = $_->render_as_fragment;
+        my $link  = $_->filename;
+        qq[\n\n<div class="entry">$text\n<a href="$link">link</a></div>]
+    } shift->entries;
+}
+
+sub _build_title {
+    shift->filename;
 }
 
 sub BUILD {
