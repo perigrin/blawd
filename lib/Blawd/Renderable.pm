@@ -1,5 +1,7 @@
 package Blawd::Renderable;
+use 5.10.0;
 use Moose::Role;
+use MooseX::Types::Path::Class qw(File);
 use namespace::autoclean;
 
 has renderer => (
@@ -24,6 +26,12 @@ sub _build__renderer_instance {
 
 sub render             { $_[0]->_renderer_instance->render(@_) }
 sub render_as_fragment { $_[0]->_renderer_instance->render_as_fragment(@_) }
+
+sub render_to_file {
+    my ( $self, $name ) = @_;
+    $name //= $self->filename;
+    to_file($name)->openw->print( $self->render );
+}
 
 1;
 __END__

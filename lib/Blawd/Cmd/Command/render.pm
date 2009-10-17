@@ -5,7 +5,7 @@ use namespace::autoclean;
 use Blawd;
 extends qw(MooseX::App::Cmd::Command);
 
-has repo => (
+has [qw(repo output_dir)] => (
     isa      => 'Str',
     is       => 'ro',
     coerce   => 1,
@@ -18,29 +18,24 @@ has renderer => (
     default => 'Blawd::Renderer::MultiMarkdown',
 );
 
-has blawd => ( isa => 'Str', is => 'ro', );
-
-has output => (
-    isa        => 'IO::Handle',
+has blawd => (
+    isa        => 'Blawd',
     is         => 'ro',
-    lazy_build => 1,
+    lazy_build => 1
 );
 
-sub _build_output {
-    my ($self) = @_;
-    my $io = IO::Handle->new;
-    $io->fdopen( fileno(STDOUT), 'w' );
-    return $io;
+sub _build_blawd {
+    Blawd->new(
+        repo       => $self->repo,
+        output_dir => $self->output_dir,
+        renderer   => $self->renderer,
+    );
 }
 
 sub run {
     my $self = shift;
-    $self->output->say(
-        Blawd->new(
-            repo     => $self->repo,
-            renderer => $self->renderer,
-          )->index->render
-    );
+    $_->render_to_file
+      for ( @{ $self->blawd->indexes }, @{ $self->blawd->entries } );
 }
 
 __PACKAGE__->meta->make_immutable;

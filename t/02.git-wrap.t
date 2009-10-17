@@ -37,7 +37,7 @@ is(
 );
 is( $entries[0]->author,  'Chris Prather',        'right author' );
 is( $entries[0]->content, 'Hello World',          'right content' );
-is( $entries[0]->render,  "<p>Hello World</p>\n", 'render correctly' );
+is( $entries[0]->render_as_fragment,  "<p>Hello World</p>\n", 'render correctly' );
 
 isa_ok( $blog->index, 'Blawd::Index' );
 like( $blog->index->render, qr"<p>Hello World</p>\n", 'index renders' );
@@ -60,7 +60,7 @@ is(
 );
 is( $entries[-1]->author,  'Chris Prather',        'right author' );
 is( $entries[-1]->content, 'Hello World',          'right content' );
-is( $entries[-1]->render,  "<p>Hello World</p>\n", 'render correctly' );
+is( $entries[-1]->render_as_fragment,  "<p>Hello World</p>\n", 'render correctly' );
 
 is(
     $entries[0]->date,
@@ -72,7 +72,7 @@ is(
 );
 is( $entries[0]->author,  'Chris Prather',          'right author' );
 is( $entries[0]->content, 'Goodbye World',          'right content' );
-is( $entries[0]->render,  "<p>Goodbye World</p>\n", 'render correctly' );
+is( $entries[0]->render_as_fragment,  "<p>Goodbye World</p>\n", 'render correctly' );
 
 $blog = Blawd->new( repo => "$directory/.git" );
 isa_ok( $blog->index, 'Blawd::Index' );

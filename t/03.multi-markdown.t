@@ -27,7 +27,7 @@ my $blog = Blawd->new(
 );
 
 my @entries = $blog->find_entries, 'got entries';
-is( $entries[0]->render, qq[<h1 id="helloworld">Hello World</h1>\n], 'render correctly' );
+is( $entries[0]->render_as_fragment, qq[<h1 id="helloworld">Hello World</h1>\n], 'render correctly' );
 
 done_testing;
 dir($directory)->rmtree;

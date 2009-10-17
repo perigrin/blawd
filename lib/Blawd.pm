@@ -9,7 +9,7 @@ use Blawd::Storage::Git;
 use Blawd::Index;
 use MooseX::Types::Path::Class qw(Dir);
 
-has repo => (
+has [qw(repo)] => (
     isa      => Dir,
     is       => 'ro',
     coerce   => 1,
@@ -43,24 +43,41 @@ sub _build_storage {
     return Blawd::Storage::Git->new(%conf);
 }
 
-has index => (
+has indexes => (
+    isa        => 'ArrayRef[Blawd::Index]',
     is         => 'ro',
-    isa        => 'Blawd::Index',
-    handles    => 'Blawd::Renderable',
     lazy_build => 1,
+    traits     => ['Array'],
+    handles    => { index => [ 'get', '0' ] },
 );
 
-sub _build_index {
+sub _build_indexes {
     my $self = shift;
-    Blawd::Index->new(
-        filename => 'index.html',
-        renderer => $self->renderer,
-        entries  => [ $self->find_entries( $self->blawd_branch ) ]
-    );
+    [
+        Blawd::Index->new(
+            filename => '/index.html',
+            renderer => $self->renderer,
+            entries  => $self->entries
+        )
+    ];
+}
+
+has entries => (
+    isa        => 'ArrayRef[Blawd::Entry::MultiMarkdown]',
+    is         => 'ro',
+    lazy_build => 1,
+);
+use Data::Dumper;
+
+sub _build_entries {
+    my ($self) = @_;
+    [ $self->find_entries( $self->blawd_branch ) ];
 }
 
 sub refresh {
     my $self = shift;
+    $self->clear_entries;
+    $self->clear_indexes;
     $self->clear_storage;
     $self->storage;
 }

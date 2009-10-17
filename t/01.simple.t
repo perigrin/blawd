@@ -106,7 +106,7 @@ $commit = Commit->new(
 );
 $blog->storage->put_object($commit);
 
-ok( $blog->clear_index, 'cleared the index' );
+ok( $blog->refresh, 'cleared the index' );
 ok( @entries = $blog->find_entries, 'got entries' );
 is( scalar @entries, 2, 'got two posts' );
 ok( $_->does('Blawd::Entry::API'), 'does Blawd::Entry::API' ) for @entries;
