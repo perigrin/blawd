@@ -11,6 +11,8 @@ requires 'Template';
 requires 'Try::Tiny';
 requires 'HTTP::Engine';
 requires 'Text::MultiMarkdown';
+requires 'aliased';
+requires 'XML::RSS';
 
 build_requires 'Test::More' => 0.90;
 build_requires 'Git::Wrapper';

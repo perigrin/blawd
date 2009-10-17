@@ -9,7 +9,12 @@ use Blawd::Storage::Git;
 use Blawd::Index;
 use MooseX::Types::Path::Class qw(Dir);
 
-has [qw(repo)] => (
+use aliased 'Blawd::Renderer::Simple';
+use aliased 'Blawd::Renderer::RSS';
+
+has title => ( isa => 'Str', is => 'ro', required => 1, );
+
+has repo => (
     isa      => Dir,
     is       => 'ro',
     coerce   => 1,
@@ -21,7 +26,7 @@ has init => ( isa => 'Bool', is => 'ro', );
 has renderer => (
     isa     => 'Str',
     is      => 'ro',
-    default => 'Blawd::Renderer::Simple',
+    default => Simple,
 );
 
 has storage => (
@@ -58,13 +63,15 @@ sub _build_indexes {
     my $self = shift;
     [
         Blawd::Index->new(
+            title    => $self->title,
             filename => 'index',
             renderer => $self->renderer,
             entries  => $self->entries
         ),
         Blawd::Index->new(
-            filename => 'perl',
-            renderer => $self->renderer,
+            title    => $self->title,
+            filename => 'rss',
+            renderer => RSS,
             entries =>
               [ $self->find_entry( sub { $_->content =~ m/\bperl\b/; } ) ],
         )
@@ -106,58 +113,4 @@ sub refresh {
 
 __PACKAGE__->meta->make_immutable;
 1;
-
 __END__
-
-=head1 NAME
-
-Blawd - A Quick and Dirty Blogging System
-
-=head1 VERSION
-
-This documentation refers to version 0.01.
-
-=head1 SYNOPSIS
-
-	use Blawd;
-	Blawd->new( gitdir => '/var/git/repositories/myblog.git' );
-
-=head1 DESCRIPTION
-
-Blawd is in it's infancy. The basic idea is to take MultiMarkdown files stored
-in a git revisioned tree, combine them with some Template Toolkit templates
-and generate a blog. Mostly I'm looking for an excuse to play with
-Git::PurePerl, and learn the git internals better.
-
-=head1 ATTRIBUTES
-
-=head2 repo 
-
-The directory that your Blog Repo lives in. Currently this is expecting a Git
-Repo.
-
-=head2 init
-
-Create a new Git Repo (at the value of repo) to hold the Blog.
-
-=head1 METHODS
-
-=head2 render (method)
-
-Render the current index or entry.
-
-=head1 BUGS AND LIMITATIONS
-
-None known currently, please email the author if you find any.
-
-=head1 AUTHOR
-
-Chris Prather (chris@prather.org)
-
-=head1 LICENCE
-
-Copyright 2009 by Chris Prather.
-
-This software is free.  It is licensed under the same terms as Perl itself.
-
-=cut

@@ -8,6 +8,8 @@ use HTTP::Engine::Response;
 use MooseX::Types::Path::Class qw(File);
 extends qw(MooseX::App::Cmd::Command);
 
+has title => ( isa => 'Str', is => 'ro', default => 'Blawd' );
+
 has repo => (
     isa      => 'Str',
     is       => 'ro',
@@ -30,6 +32,7 @@ has blawd => (
 sub _build_blawd {
     my $self = shift;
     Blawd->new(
+        title    => $self->title,
         repo     => $self->repo,
         renderer => $self->renderer,
     );

@@ -12,6 +12,7 @@ has entries => (
     handles  => {
         entries => 'elements',
         size    => 'count',
+        next    => 'shift',
     },
 );
 
@@ -23,7 +24,7 @@ sub _build_date   { DateTime->now }
 sub _build_content {
     join '', map {
         my $title = $_->title;
-        my $text  = $_->render_as_fragment; 
+        my $text  = $_->render_as_fragment;
         my $link  = $_->filename;
         qq[\n\n<div class="entry">$text\n<a href="$link">link</a></div>]
     } shift->entries;
@@ -43,5 +44,6 @@ sub BUILD {
 
 with qw(Blawd::Entry::API);
 
+__PACKAGE__->meta->make_immutable;
 1;
 __END__

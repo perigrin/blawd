@@ -5,6 +5,8 @@ use namespace::autoclean;
 use Blawd;
 extends qw(MooseX::App::Cmd::Command);
 
+has title => ( isa => 'Str', is => 'ro', default => 'Blawd' );
+
 has [qw(repo output_dir)] => (
     isa      => 'Str',
     is       => 'ro',
@@ -27,15 +29,15 @@ has blawd => (
 sub _build_blawd {
     my $self = shift;
     Blawd->new(
-        repo       => $self->repo,
-        output_dir => $self->output_dir,
-        renderer   => $self->renderer,
+        title    => $self->title,
+        repo     => $self->repo,
+        renderer => $self->renderer,
     );
 }
 
 sub run {
     my $self = shift;
-    $_->render_to_file( $self->output_dir . '/' . $_->filename . '.html' )
+    $_->render_to_file( $self->output_dir . '/' . $_->filename . $_->extension )
       for ( @{ $self->blawd->indexes }, @{ $self->blawd->entries } );
 }
 

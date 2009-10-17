@@ -49,5 +49,6 @@ sub BUILD {
 
 with qw(Blawd::Entry::API);
 
+__PACKAGE__->meta->make_immutable;
 1;
 __END__
