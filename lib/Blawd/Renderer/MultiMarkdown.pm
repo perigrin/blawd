@@ -23,15 +23,17 @@ sub _build_markdown_instance {
 
 sub render {
     my ( $self, $entry ) = @_;
-    return $self->markdown(
-"Format: complete\n${\$entry->content}\nBy: $entry->{author} on $entry->{date}"
-    );
+    my $content = "Format: complete\n";
+    $content .= 'css: ' . $self->css . "\n";
+    $content .= $entry->content;
+    $content .= "\nBy: ${\$entry->author} on ${\$entry->date}";
+    return $self->markdown($content);
 }
 
 sub render_as_fragment {
     my ( $self, $entry ) = @_;
     return $self->markdown(
-        $entry->content . "\nBy: ${\$entry->author} on $entry->{date}" );
+        $entry->content . "\nBy: ${\$entry->author} on ${\$entry->date}" );
 }
 
 __PACKAGE__->meta->make_immutable;

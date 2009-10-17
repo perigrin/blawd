@@ -5,7 +5,7 @@ use namespace::autoclean;
 use Blawd;
 use HTTP::Engine;
 use HTTP::Engine::Response;
-
+use MooseX::Types::Path::Class qw(File);
 extends qw(MooseX::App::Cmd::Command);
 
 has repo => (
@@ -45,6 +45,13 @@ has _http_engine => (
 has host => ( isa => 'Str', is => 'ro', default => 'localhost' );
 has port => ( isa => 'Int', is => 'ro', default => 1978 );
 
+has css => (
+    isa       => File,
+    is        => 'ro',
+    predicate => 'has_css',
+    coerce    => 1,
+);
+
 sub _build__http_engine {
     my ($self) = @_;
     HTTP::Engine->new(
@@ -70,6 +77,21 @@ sub handle_request {
         when ( $self->blawd->get_index($_) ) {
             my $index = $self->blawd->get_index($_);
             return HTTP::Engine::Response->new( body => $index->render );
+        }
+        when ('site.css') {
+            my $css = $self->has_css ? $self->css->slurp : q[
+				html { background-color: grey; }
+				body{ 
+					width: 900px; 
+					background: white; 
+					border: 1px solid black; 
+					padding-left: 25px;
+					padding-right: 25px;
+				}
+			];
+            my $res = HTTP::Engine::Response->new( body => $css );
+            $res->headers->header( Content_Type => 'text/css' );
+            return $res;
         }
         default {
             return HTTP::Engine::Response->new(

@@ -35,7 +35,7 @@ sub _build_blawd {
 
 sub run {
     my $self = shift;
-    $_->render_to_file( $self->output_dir . '/' . $_->filename )
+    $_->render_to_file( $self->output_dir . '/' . $_->filename . '.html' )
       for ( @{ $self->blawd->indexes }, @{ $self->blawd->entries } );
 }
 
