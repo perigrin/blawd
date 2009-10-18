@@ -21,8 +21,4 @@ and learn the git internals better.
 ## Usage
 
     blawd server --directory /path/to/blog.git 
-    
-## TODO
 
-* Make it functional
-* Wrap it in an FCGI Handler 
