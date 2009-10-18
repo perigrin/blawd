@@ -20,7 +20,7 @@ and learn the git internals better.
 
 ## Usage
 
-    blawd --directory /path/to/blog --output /path/to/htdocs
+    blawd server --directory /path/to/blog.git 
     
 ## TODO
 
