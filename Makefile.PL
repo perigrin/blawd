@@ -6,6 +6,7 @@ all_from 'lib/Blawd.pm';
 requires 'aliased';
 requires 'DateTime';
 requires 'DBI';
+requires 'Git::PurePerl';
 requires 'HTTP::Engine';
 requires 'Memoize';
 requires 'Memoize';
