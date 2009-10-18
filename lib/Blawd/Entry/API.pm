@@ -25,6 +25,7 @@ has [qw(title content)] => (
 );
 
 has filename => ( isa => 'Str', is => 'ro', required => 1, );
+has headers => ( isa => 'Str', is => 'ro', default => '' );
 
 requires qw(
   _build_author

@@ -21,13 +21,13 @@ sub _build_markdown_instance {
     );
 }
 
-has extension => (	isa => 'Str',	is  => 'ro', default => '.html');
-
+has extension => ( isa => 'Str', is => 'ro', default => '.html' );
 
 sub render {
     my ( $self, $entry ) = @_;
     my $content = "Format: complete\n";
     $content .= 'css: ' . $self->css . "\n";
+    $content .= 'XHTML Header:' . $entry->headers . "\n";
     $content .= $entry->content;
     $content .= "\nBy: ${\$entry->author} on ${\$entry->date}";
     return $self->markdown($content);

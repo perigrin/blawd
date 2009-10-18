@@ -65,6 +65,10 @@ sub _build_indexes {
         Blawd::Index->new(
             title    => $self->title,
             filename => 'index',
+            headers  => qq[<link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml" />
+		    <link rel="openid.server" href="http://www.myopenid.com/server" />
+		    <link rel="openid.delegate" href="http://openid.prather.org/chris" />		    
+			],
             renderer => $self->renderer,
             entries  => $self->entries
         ),

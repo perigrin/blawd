@@ -4,7 +4,7 @@ use Moose::Role;
 use MooseX::Types::Path::Class qw(File);
 use namespace::autoclean;
 
-has base_uri => ( isa => 'Str', is => 'ro', default => '/' );
+has base_uri => ( isa => 'Str', is => 'ro', default => '' );
 
 has renderer => (
     isa        => 'Str',
@@ -28,6 +28,7 @@ sub _build__renderer_instance {
 }
 
 sub link { $_->base_uri . $_[0]->filename . $_[0]->extension }
+
 
 sub render             { $_[0]->_renderer_instance->render(@_) }
 sub render_as_fragment { $_[0]->_renderer_instance->render_as_fragment(@_) }
