@@ -11,7 +11,7 @@ BEGIN {
 }
 
 my $directory = 'my-blog';
-dir($directory)->rmtree if -e $directory;
+dir($directory)->rmtree;
 dir($directory)->mkpath;
 
 my $g = Git::Wrapper->new($directory);

@@ -1,4 +1,5 @@
 package Blawd::Entry::MultiMarkdown;
+use 5.10.0;
 use Moose;
 use MooseX::Types::Path::Class qw(File);
 use MooseX::Types::DateTimeX qw(DateTime);
@@ -12,7 +13,7 @@ sub _build_date {
     my $c = shift->content;
     $c =~ m/^Date:\s+(.*)/m;
     return to_DateTime($1) if $1;
-    return 'Unknown';
+    return DateTime::->now;
 }
 
 sub _build_author {
@@ -27,24 +28,24 @@ sub _build_title {
     return 'Unknown';
 }
 
-sub BUILD {
-    my ( $self, $p ) = @_;
-    return unless $p->{commit};
-    unless ( $self->content =~ /^Title:/m ) {
-        $self->meta->get_attribute('title')
-          ->set_value( $self, '' );
+sub BUILDARGS {
+    my ( $self ) = shift;
+    my $p = $self->next::method(@_);
+    given ( $p->{commit} ) {
+        when ( !m/^Title:/m ) {
+            $p->{title} //= '';
+            continue;
+        }
+        when ( !m/^Author:/m ) {
+            $p->{author} //= $p->{commit}->author->name;
+            continue;
+        }
+        when ( !/^Date:/m ) {
+            $p->{date} //= $p->{commit}->committed_time;
+            continue;
+        }
     }
-
-    unless ( $self->content =~ /^Author:/m ) {
-        $self->meta->get_attribute('author')
-          ->set_value( $self, $p->{commit}->author->name );
-    }
-
-    unless ( $self->content =~ /^Date:/m ) {
-        $self->meta->get_attribute('date')
-          ->set_value( $self, $p->{commit}->committed_time );
-    }
-
+    return $p;
 }
 
 with qw(Blawd::Entry::API);

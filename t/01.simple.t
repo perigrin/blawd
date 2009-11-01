@@ -17,7 +17,11 @@ use aliased 'Git::PurePerl::NewObject::Commit';
 my $directory = 'blog-bare.git';
 
 dir($directory)->rmtree;
-my $blog = Blawd->new( repo => $directory, init => 1, title => 'Test' );
+my $blog = Blawd->new(
+    repo  => $directory,
+    init  => 1,
+    title => 'Test',
+);
 
 # SET UP A POST
 
@@ -65,8 +69,8 @@ is( $entries[0]->author,  'Flexo',       'right author' );
 is( $entries[0]->content, 'Hello World', 'right content' );
 like( $entries[0]->render, qr'Hello World', 'render correctly' );
 
-isa_ok( $blog->index, 'Blawd::Index' );
-like( $blog->index->render, qr"Hello World", 'index renders' );
+isa_ok( $blog->get_index('index'), 'Blawd::Index' );
+like( $blog->get_index('index')->render, qr"Hello World", 'index renders' );
 
 # SET UP A SECOND POST
 
@@ -128,7 +132,7 @@ isa_ok( $blog->index, 'Blawd::Index' );
 is( $blog->index->size, 2, 'index is the right size' );
 like(
     $blog->index->render,
-	qr|<div class="entry"><p>Goodbye World|,
+    qr|<div class="entry"><p>Goodbye World|,
     'index renders'
 );
 

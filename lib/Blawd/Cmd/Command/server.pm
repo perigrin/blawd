@@ -98,7 +98,7 @@ sub handle_request {
         }
         default {
             return HTTP::Engine::Response->new(
-                body => $self->blawd->index->render );
+                body => $self->blawd->get_index('index')->render );
         }
     }
 

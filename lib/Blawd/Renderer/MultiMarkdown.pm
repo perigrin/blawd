@@ -42,3 +42,42 @@ sub render_as_fragment {
 __PACKAGE__->meta->make_immutable;
 1;
 __END__
+
+=head1 NAME
+
+Blawd::Renderer::MultiMarkdown
+
+=head1 SYNOPSIS
+
+use Blawd::Renderer::MultiMarkdown;
+
+=head1 DESCRIPTION
+
+The Blawd::Renderer::MultiMarkdown class implements conversions from
+MultiMarkdown to HTML for Blawd entries.
+
+=head1 METHODS
+
+=head2 render (Blawd::Entry::MultiMarkdown $entry)
+
+Render C<$entry> to a full HTML page.
+
+=head2 render_as_fragment (Blawd::Entry::MultiMarkdown $entry)
+
+Render C<$entry> to an HTML fragment.
+
+=head1 PRIVATE METHODS
+
+=head2 _build_markdown_instance
+
+=head1 AUTHOR
+
+Chris Prather (chris@prather.org)
+
+=head1 LICENCE
+
+Copyright 2009 by Chris Prather.
+
+This software is free.  It is licensed under the same terms as Perl itself.
+
+=cut
