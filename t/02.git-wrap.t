@@ -21,7 +21,7 @@ $hello->openw->print('Hello World');
 $g->add('hello');
 $g->commit( { message => 'first post' } );
 
-ok( my $blog = Blawd->new( repo => "$directory/.git" ), 'new blawd' );
+ok( my $blog = Blawd->new( repo => "$directory/.git", title => 'test' ), 'new blawd' );
 
 ok( my @entries = $blog->find_entries, 'got entries' );
 is( @entries, 1, 'only one entry' );
@@ -37,10 +37,10 @@ is(
 );
 is( $entries[0]->author,  'Chris Prather',        'right author' );
 is( $entries[0]->content, 'Hello World',          'right content' );
-is( $entries[0]->render_as_fragment,  "<p>Hello World</p>\n", 'render correctly' );
+like( $entries[0]->render_as_fragment,  qr"<p>Hello World\n", 'render correctly' );
 
 isa_ok( $blog->index, 'Blawd::Index' );
-like( $blog->index->render, qr"<p>Hello World</p>\n", 'index renders' );
+like( $blog->index->render, qr"<p>Hello World\n", 'index renders' );
 
 my $bye = dir($directory)->file('goodbye');
 $bye->openw->print('Goodbye World');
@@ -60,7 +60,7 @@ is(
 );
 is( $entries[-1]->author,  'Chris Prather',        'right author' );
 is( $entries[-1]->content, 'Hello World',          'right content' );
-is( $entries[-1]->render_as_fragment,  "<p>Hello World</p>\n", 'render correctly' );
+like( $entries[-1]->render_as_fragment,  qr"<p>Hello World", 'render correctly' );
 
 is(
     $entries[0]->date,
@@ -72,14 +72,14 @@ is(
 );
 is( $entries[0]->author,  'Chris Prather',          'right author' );
 is( $entries[0]->content, 'Goodbye World',          'right content' );
-is( $entries[0]->render_as_fragment,  "<p>Goodbye World</p>\n", 'render correctly' );
+like( $entries[0]->render_as_fragment,  qr"<p>Goodbye World", 'render correctly' );
 
-$blog = Blawd->new( repo => "$directory/.git" );
+$blog = Blawd->new( repo => "$directory/.git", title => 'Test Blog' );
 isa_ok( $blog->index, 'Blawd::Index' );
 is( $blog->index->size, 2, 'index is the right size' );
 like(
     $blog->index->render,
-    qr|<div class="entry"><p>Goodbye World</p>\s+</div><div class="entry"><p>Hello World</p>\s+</div>|m,
+    qr|<div class="entry"><p>Goodbye World|m,
     'index renders'
 );
 

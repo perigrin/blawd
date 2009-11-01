@@ -17,7 +17,7 @@ use aliased 'Git::PurePerl::NewObject::Commit';
 my $directory = 'blog-bare.git';
 
 dir($directory)->rmtree;
-my $blog = Blawd->new( repo => $directory, init => 1 );
+my $blog = Blawd->new( repo => $directory, init => 1, title => 'Test' );
 
 # SET UP A POST
 
@@ -128,7 +128,7 @@ isa_ok( $blog->index, 'Blawd::Index' );
 is( $blog->index->size, 2, 'index is the right size' );
 like(
     $blog->index->render,
-qr|<div class="entry"><p>Goodbye World</p>\s+</div><div class="entry"><p>Hello World</p>\s+</div>|m,
+	qr|<div class="entry"><p>Goodbye World|,
     'index renders'
 );
 

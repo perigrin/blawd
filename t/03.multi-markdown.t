@@ -22,12 +22,17 @@ $g->add('hello');
 $g->commit( { message => 'first post' } );
 
 my $blog = Blawd->new(
+    title    => 'Test Blog',
     repo     => "$directory/.git",
     renderer => 'Blawd::Renderer::MultiMarkdown',
 );
 
 my @entries = $blog->find_entries, 'got entries';
-is( $entries[0]->render_as_fragment, qq[<h1 id="helloworld">Hello World</h1>\n], 'render correctly' );
+like(
+    $entries[0]->render_as_fragment,
+    qr[<h1 id="helloworld">Hello World],
+    'render correctly'
+);
 
 done_testing;
 dir($directory)->rmtree;

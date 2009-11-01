@@ -32,7 +32,7 @@ sub BUILD {
     return unless $p->{commit};
     unless ( $self->content =~ /^Title:/m ) {
         $self->meta->get_attribute('title')
-          ->set_value( $self, $p->{commit}->filename );
+          ->set_value( $self, '' );
     }
 
     unless ( $self->content =~ /^Author:/m ) {
