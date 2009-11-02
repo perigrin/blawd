@@ -18,22 +18,20 @@ has date => (
     lazy_build => 1
 );
 
-has [qw(title content)] => (
+has title => (
     isa        => 'Str',
     is         => 'ro',
     lazy_build => 1,
 );
 
-has filename => ( isa => 'Str', is => 'ro', required => 1, );
+has [qw(content filename)] => ( isa => 'Str', is => 'ro', required => 1, );
 has headers => ( isa => 'Str', is => 'ro', default => '' );
 
 requires qw(
   _build_author
   _build_date
-  _build_content
   _build_title
 );
-
 
 1;
 __END__

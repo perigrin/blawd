@@ -7,8 +7,8 @@ with qw(Blawd::Storage::API);
 use Try::Tiny;
 
 sub find_entries {
-    my ( $self, $commit ) = @_;
-    $commit //= $self->master;
+    my ( $self ) = @_;
+    my $commit = $self->master;
     my $tree = $commit->tree;
 
     my @output;

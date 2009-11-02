@@ -97,12 +97,52 @@ like(
 
 is_deeply( $entries[0], $blog->get_entry('goodbye'), 'entry compares okay' );
 
+for ( 3 .. 15 ) {
+    my $post = dir($directory)->file( 'lorem' . $_ );
+    $post->openw->print(<<"END_POST");
+Title: Lorem Ipsum $_
+Author: Lauren Epson
+Date: 2008-11-01 19:23
+
+Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
+occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+mollit anim id est laborum.
+
+END_POST
+
+    $g->add( 'lorem' . $_ );
+    $g->commit( { message => 'lorem post ' . $_ } );
+}
+
+$blog = Blawd->new( repo => "$directory/.git", title => 'Test Blog' );
+isa_ok( $blog->get_index('index'), 'Blawd::Index' );
+is( $blog->get_index('index')->size, 11, 'index is the right size' );
+like(
+    $blog->get_index('index')->render,
+    qr|<div class="entry"><p>Lorem|m,
+    'index renders'
+);
+is( $blog->entries->[-1]->author,  'Lauren Epson', 'right author' );
+like(
+    $blog->entries->[-1]->render_as_fragment,
+    qr"<p>Lorem",
+    'render correctly'
+);
+
+
+
+
 ok( my $rss = $blog->get_index('rss')->render, 'got RSS' );
 is( $blog->get_index('rss')->render_as_fragment,
     $rss, 'fragment is the full RSS' );
 
-ok($blog->get_index('rss')->render_to_file('/tmp/blawd_test_rss'), 'render to file');
-is(file('/tmp/blawd_test_rss')->slurp, $rss, 'file output is good');
+ok( $blog->get_index('rss')->render_to_file('/tmp/blawd_test_rss'),
+    'render to file' );
+is( file('/tmp/blawd_test_rss')->slurp, $rss, 'file output is good' );
 
 done_testing;
 dir($directory)->rmtree;

@@ -21,6 +21,12 @@ has entries => (
 sub _build_author { 'Unknown' }
 sub _build_date   { DateTime->now }
 
+has content => (
+    isa        => 'Str',
+    is         => 'ro',
+    lazy_build => 1,
+);
+
 sub _build_content {
     join '', map {
         my $title = $_->title;

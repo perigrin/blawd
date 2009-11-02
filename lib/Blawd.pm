@@ -32,9 +32,7 @@ has storage => (
 sub _build_storage {
     my $self = shift;
 
-    my %conf = (
-        gitdir   => $self->repo,
-    );
+    my %conf = ( gitdir => $self->repo, );
 
     return Blawd::Storage::Git->init(%conf) if $self->init;
     return Blawd::Storage::Git->new(%conf);
@@ -98,7 +96,7 @@ has entries => (
 
 sub _build_entries {
     my ($self) = @_;
-    [ $self->find_entries( $self->blawd_branch ) ];
+    [ sort { $b->date <=> $a->date }$self->find_entries() ];
 }
 
 sub get_entry {
