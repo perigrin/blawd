@@ -4,12 +4,11 @@ use namespace::autoclean;
 extends qw(Git::PurePerl);
 with qw(Blawd::Storage::API);
 
-use Try::Tiny;
-
 sub find_entries {
-    my ( $self ) = @_;
+    my ($self) = @_;
+
     my $commit = $self->master;
-    my $tree = $commit->tree;
+    my $tree   = $commit->tree;
 
     my @output;
     for my $entry ( $tree->directory_entries ) {
