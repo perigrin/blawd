@@ -143,6 +143,9 @@ like(
     'index renders'
 );
 
+ok( !defined $blog->get_entry(), 'get_entry() is undef' );
+ok( !defined $blog->get_index(), 'get_index() is undef' );
+
 done_testing;
 
 dir($directory)->rmtree;
