@@ -4,6 +4,7 @@ use 5.10.0;
 all_from 'lib/Blawd.pm';
 
 requires 'aliased';
+requires 'Bread::Board';
 requires 'DateTime';
 requires 'DBI';
 requires 'Git::PurePerl';

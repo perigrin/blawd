@@ -1,13 +1,11 @@
 package Blawd;
-use Moose 0.92;
 use 5.10.0;
+use Moose 0.92;
 use namespace::autoclean;
+use Blawd::Index;
+use Blawd::Entry::MultiMarkdown;
 
 our $VERSION = '0.01';
-
-use Blawd::Storage::Git;
-use Blawd::Index;
-use MooseX::Types::Path::Class qw(Dir);
 
 has indexes => (
     isa     => 'ArrayRef[Blawd::Index]',
@@ -50,7 +48,7 @@ __END__
 
 =head1 NAME
 
-Blawd - A class to ...
+Blawd - A Blogging application in the style of Jekyll or Blosxome
 
 =head1 VERSION
 
@@ -58,33 +56,25 @@ This documentation refers to version 0.01.
 
 =head1 SYNOPSIS
 
-use Blawd;
+	$ blawd server --repo $HOME/my-blog/.git
 
 =head1 DESCRIPTION
 
-The Blawd class implements ...
+Blawd is a blog aware git based content management system, similar to
+Bloxsom or Jekyll. It has managed to replace MovableType on my personal
+blog, but it is still very very rough. By default it will generate a
+tree of HTML documents, but it can be run as a server as well using
+L<HTTP::Engine|HTTP::Engine>
 
 =head1 METHODS
 
 =head2 get_index (Str $name)
 
-Retrieves the named index.
+Retrieved the the named L<Blawd::Index|Blawd::Index>
 
 =head2 get_entry (Str $name)
 
-Retrieves the named entry
-
-=head2 refresh ()
-
-Reload data from the source Git repository.
-
-=description PRIVATE METHDOS
-
-=head2 _build_storage (method)
-
-=head2 _build_indexes
-
-=head2 _build_entries (method)
+Retrieve the named Blawd Entry.
 
 =head1 DEPENDENCIES
 
@@ -92,13 +82,21 @@ Reload data from the source Git repository.
 
 =item aliased
 
+=item Bread::Board
+
 =item DateTime
+
+=item DBI
 
 =item Git::PurePerl
 
+=item HTTP::Engine
+
 =item Memoize
 
-=item Moose
+=item Moose => 0.92
+
+=item MooseX::Aliases
 
 =item MooseX::Types::DateTime
 
@@ -110,7 +108,7 @@ Reload data from the source Git repository.
 
 =item Path::Class
 
-=item Text::MultiMarkdown
+=item Text::MultiMarkdown => 1.0.30
 
 =item Try::Tiny
 
