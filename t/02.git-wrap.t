@@ -7,6 +7,8 @@ use Try::Tiny;
 use Path::Class;
 use Blawd;
 
+use aliased 'Blawd::Cmd::Container';
+
 BEGIN {
     try { use Git::Wrapper }
     catch { plan skip_all => 'Tests Require Git::Wrapper ' };
@@ -16,17 +18,25 @@ my $directory = 'my-blog';
 dir($directory)->rmtree;
 dir($directory)->mkpath;
 
+{
+
+    package Config;
+    use Moose;
+    has title => ( isa => 'Str', is => 'ro', default => 'Blawd' );
+    has repo  => ( isa => 'Str', is => 'ro', default => "$directory/.git");
+}
+
 my $g = Git::Wrapper->new($directory);
 $g->init;
+
 my $hello = dir($directory)->file('hello');
 $hello->openw->print('Hello World');
 $g->add('hello');
 $g->commit( { message => 'first post' } );
 
-ok( my $blog = Blawd->new( repo => "$directory/.git", title => 'test' ),
-    'new blawd' );
+ok( my $blog = Container->new( config => Config->new )->build_app );
 
-ok( my @entries = $blog->find_entries, 'got entries' );
+ok( my @entries = $blog->entries, 'got entries' );
 is( @entries, 1, 'only one entry' );
 
 ok( $_->does('Blawd::Entry::API'), 'does Blawd::Entry::API' ) for @entries;
@@ -54,7 +64,9 @@ $bye->openw->print('Goodbye World');
 $g->add('goodbye');
 $g->commit( { message => 'second post' } );
 
-ok( my @entries = $blog->find_entries, 'got entries' );
+$blog = Container->new( config => Config->new )->build_app;
+ok( my @entries = $blog->entries, 'got entries' );
+is(scalar @entries, 2, 'got two entries');
 ok( $_->does('Blawd::Entry::API'), 'does Blawd::Entry::API' ) for @entries;
 
 is(
@@ -86,7 +98,7 @@ like(
     'render correctly'
 );
 
-$blog = Blawd->new( repo => "$directory/.git", title => 'Test Blog' );
+#$blog = Container->new( config => Config->new )->build_app;
 isa_ok( $blog->index, 'Blawd::Index' );
 is( $blog->index->size, 2, 'index is the right size' );
 like(
@@ -118,7 +130,7 @@ END_POST
     $g->commit( { message => 'lorem post ' . $_ } );
 }
 
-$blog = Blawd->new( repo => "$directory/.git", title => 'Test Blog' );
+$blog = Container->new( config => Config->new )->build_app;
 isa_ok( $blog->get_index('index'), 'Blawd::Index' );
 is( $blog->get_index('index')->size, 11, 'index is the right size' );
 like(
@@ -126,15 +138,9 @@ like(
     qr|<div class="entry"><p>Lorem|m,
     'index renders'
 );
-is( $blog->entries->[-1]->author,  'Lauren Epson', 'right author' );
-like(
-    $blog->entries->[-1]->render_as_fragment,
-    qr"<p>Lorem",
-    'render correctly'
-);
-
-
-
+is( ($blog->entries)[-1]->author, 'Lauren Epson', 'right author' );
+like( ($blog->entries)[-1]->render_as_fragment,
+    qr"<p>Lorem", 'render correctly' );
 
 ok( my $rss = $blog->get_index('rss')->render, 'got RSS' );
 is( $blog->get_index('rss')->render_as_fragment,

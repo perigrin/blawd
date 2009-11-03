@@ -6,7 +6,6 @@ use HTTP::Engine;
 use HTTP::Engine::Response;
 
 extends qw(MooseX::App::Cmd::Command);
-with qw(Blawd::Cmd::Container);
 
 has title => ( isa => 'Str', is => 'ro', default => 'Blawd' );
 
@@ -40,9 +39,19 @@ sub _build__http_engine {
     );
 }
 
+has container => (
+    isa        => 'Blawd::Cmd::Container',
+    is         => 'ro',
+    lazy_build => 1,
+);
+
+sub _build_container {
+    Blawd::Cmd::Container->new( config => shift );
+}
+
 sub handle_request {
     my ( $self, $req ) = @_;
-    my $blawd = $self->build_app($self);
+    my $blawd = $self->container->build_app();
     given ( $req->path ) {
         $_ =~ s|^/||;
         when ( $blawd->get_entry($_) ) {

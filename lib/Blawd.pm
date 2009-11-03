@@ -9,8 +9,6 @@ use Blawd::Storage::Git;
 use Blawd::Index;
 use MooseX::Types::Path::Class qw(Dir);
 
-has title => ( isa => 'Str', is => 'ro', required => 1, );
-
 has indexes => (
     isa     => 'ArrayRef[Blawd::Index]',
     is      => 'ro',
@@ -30,10 +28,12 @@ sub get_index {
 }
 
 has entries => (
-    isa      => 'ArrayRef[Blawd::Entry::MultiMarkdown]',
-    is       => 'ro',
-    traits   => ['Array'],
-    handles  => { find_entry => ['grep'], },
+    isa     => 'ArrayRef[Blawd::Entry::MultiMarkdown]',
+    traits  => ['Array'],
+    handles => {
+        find_entry => ['grep'],
+        entries    => ['elements'],
+    },
     required => 1,
 );
 

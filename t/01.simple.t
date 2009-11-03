@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use Test::More;
 use DateTime;
-use Blawd;
 use Git::PurePerl;
 use Path::Class;
 
@@ -14,14 +13,20 @@ use aliased 'Git::PurePerl::NewObject::Tree';
 use aliased 'Git::PurePerl::Actor';
 use aliased 'Git::PurePerl::NewObject::Commit';
 
-my $directory = 'blog-bare.git';
+use aliased 'Blawd::Cmd::Container';
 
+my $directory = 'blog-bare.git';
 dir($directory)->rmtree;
-my $blog = Blawd->new(
-    repo  => $directory,
-    init  => 1,
-    title => 'Test',
-);
+
+my $store = Git::PurePerl->init( gitdir => $directory );
+
+{
+
+    package Config;
+    use Moose;
+    has title => ( isa => 'Str', is => 'ro', default => 'Blawd' );
+    has repo  => ( isa => 'Str', is => 'ro', default => $directory );
+}
 
 # SET UP A POST
 
@@ -31,7 +36,7 @@ my $hello_blob = Blob->new( content => 'Hello World' );
 is( $hello_blob->sha1, '5e1c309dae7f45e0f39b1bf3ac3cd9db12e7d689',
     'right sha1' );
 
-$blog->storage->put_object($hello_blob);
+$store->put_object($hello_blob);
 
 my $hello = DirectoryEntry->new(
     mode     => '100644',
@@ -41,7 +46,7 @@ my $hello = DirectoryEntry->new(
 
 my $tree = Tree->new( directory_entries => [$hello] );
 
-$blog->storage->put_object($tree);
+$store->put_object($tree);
 
 my $commit = Commit->new(
     tree   => $tree->sha1,
@@ -58,10 +63,11 @@ my $commit = Commit->new(
     comment        => 'Post',
 );
 
-$blog->storage->put_object($commit);
+$store->put_object($commit);
 
 # TEST THE POST
-ok( my @entries = $blog->find_entries, 'got entries' );
+ok( my $blog = Container->new( config => Config->new )->build_app );
+ok( my @entries = $blog->entries, 'got entries' );
 is( scalar @entries, 1, 'got only one post' );
 ok( $_->does('Blawd::Entry::API'), 'does Blawd::Entry::API' ) for @entries;
 is( $entries[0]->date,    $hello_mtime,  'right mtime' );
@@ -75,7 +81,7 @@ like( $blog->get_index('index')->render, qr"Hello World", 'index renders' );
 # SET UP A SECOND POST
 
 my $bye_blob = Blob->new( content => 'Goodbye World' );
-$blog->storage->put_object($bye_blob);
+$store->put_object($bye_blob);
 
 $tree = Tree->new(
     directory_entries => [
@@ -92,7 +98,7 @@ $tree = Tree->new(
     ]
 );
 
-$blog->storage->put_object($tree);
+$store->put_object($tree);
 my $bye_mtime = DateTime->from_epoch( epoch => 1240341782 );
 $commit = Commit->new(
     tree   => $tree->sha1,
@@ -108,10 +114,11 @@ $commit = Commit->new(
     committed_time => $bye_mtime,
     comment        => 'Post',
 );
-$blog->storage->put_object($commit);
+$store->put_object($commit);
 
-ok( $blog->refresh, 'cleared the index' );
-ok( @entries = $blog->find_entries, 'got entries' );
+$blog = Container->new( config => Config->new )->build_app;
+
+ok( @entries = $blog->entries, 'got entries' );
 is( scalar @entries, 2, 'got two posts' );
 ok( $_->does('Blawd::Entry::API'), 'does Blawd::Entry::API' ) for @entries;
 TODO: {

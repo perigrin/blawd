@@ -1,12 +1,22 @@
 package Blawd::Cmd::Container;
-use Moose::Role;
+use Moose;
 use namespace::autoclean;
 
 use Bread::Board;
 use aliased 'Blawd::Renderer::RSS';
+use Moose::Util::TypeConstraints qw(duck_type);
+
+use Blawd::Index;
+
+has config => (
+    isa => duck_type( [qw(repo title)] ),
+    is => 'ro',
+    required => 1,
+);
 
 sub build_app {
-    my ( $self, $cfg ) = @_;
+    my ($self) = @_;
+    my $cfg = $self->config;
 
     my $c = container Blawd => as {
 
@@ -23,10 +33,7 @@ sub build_app {
         service app => (
             class        => 'Blawd',
             lifecycle    => 'Singleton',
-            dependencies => [
-                depends_on('title'), depends_on('indexes'),
-                depends_on('entries'),
-            ]
+            dependencies => [ depends_on('indexes'), depends_on('entries'), ]
         );
 
         service storage => (
