@@ -23,7 +23,7 @@ sub _build_container {
     Blawd::Cmd::Container->new( config => shift );
 }
 
-sub run {
+sub execute {
     my $self  = shift;
     my $blawd = $self->container->build_app($self);
     $_->render_to_file( $self->output_dir . '/' . $_->filename . $_->extension )

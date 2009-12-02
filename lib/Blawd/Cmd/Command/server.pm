@@ -4,6 +4,8 @@ use Moose;
 use namespace::autoclean;
 use HTTP::Engine;
 use HTTP::Engine::Response;
+use Plack::Loader;
+use Blawd::Cmd::Container;
 
 extends qw(MooseX::App::Cmd::Command);
 
@@ -19,7 +21,6 @@ has _http_engine => (
     isa        => 'HTTP::Engine',
     is         => 'ro',
     lazy_build => 1,
-    handles    => [qw(run)],
 );
 
 has host => ( isa => 'Str', is => 'ro', default => 'localhost' );
@@ -29,14 +30,16 @@ sub _build__http_engine {
     my ($self) = @_;
     HTTP::Engine->new(
         interface => {
-            module => 'ServerSimple',
-            args   => {
-                host => $self->host,
-                port => $self->port,
-            },
+            module          => 'PSGI',
             request_handler => sub { $self->handle_request(@_) },
         },
     );
+}
+
+sub execute {
+    my $self = shift;
+    my $app = sub { $self->_http_engine->run(@_) };
+    Plack::Loader->auto( host => $self->host, port => $self->port )->run($app);
 }
 
 has container => (

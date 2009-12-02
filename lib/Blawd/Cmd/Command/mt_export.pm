@@ -66,7 +66,7 @@ sub _build_git {
     Git::Wrapper->new( $self->repo );
 }
 
-sub run {
+sub execute {
     my $self = shift;
 
     my $sth = $self->dbi->prepare( $self->entry_query );

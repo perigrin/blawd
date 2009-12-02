@@ -1,4 +1,7 @@
 #!/usr/bin/env perl 
 use 5.10.0;
 use lib qw(lib);
-use Blawd::Cmd -run;
+use Blawd::Cmd;
+
+Blawd::Cmd->run;
+
