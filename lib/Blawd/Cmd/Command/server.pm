@@ -55,14 +55,6 @@ sub handle_request {
     my $blawd = $self->container->build_app();
     given ( $req->path ) {
         $_ =~ s|^/||;
-        when ( $blawd->get_entry($_) ) {
-            my $entry = $blawd->get_entry($_);
-            return HTTP::Engine::Response->new( body => $entry->render );
-        }
-        when ( $blawd->get_index($_) ) {
-            my $index = $blawd->get_index($_);
-            return HTTP::Engine::Response->new( body => $index->render );
-        }
         when ('site.css') {
             my $css = q[
 				html { background-color: grey; }
@@ -77,6 +69,15 @@ sub handle_request {
             my $res = HTTP::Engine::Response->new( body => $css );
             $res->headers->header( Content_Type => 'text/css' );
             return $res;
+        }
+        $_ =~ s|\..*?$||;
+        when ( $blawd->get_entry($_) ) {
+            my $entry = $blawd->get_entry($_);
+            return HTTP::Engine::Response->new( body => $entry->render );
+        }
+        when ( $blawd->get_index($_) ) {
+            my $index = $blawd->get_index($_);
+            return HTTP::Engine::Response->new( body => $index->render );
         }
         default {
             return HTTP::Engine::Response->new(
