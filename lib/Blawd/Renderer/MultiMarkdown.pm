@@ -28,17 +28,23 @@ sub render {
     my $content = "Format: complete\n";
     $content .= 'css: ' . $self->css . "\n";
     $content .= 'XHTML Header:' . $entry->headers . "\n";
-    $content .= $entry->content;
-    $content .= "\nBy: ${\$entry->author} on ${\$entry->date}\n";
-    $content .= "\nTags: " . join ' ', map { "[$_](".$entry->base_uri.$_.$entry->extension.")" } @{ $entry->tags };
+    $content .= $entry->content . "\n";
+    $content .= "By: ${\$entry->author} on ${\$entry->date}\n\n";
+    $content .= "Tags: " . join ' ', map {
+        "[$_](" . $entry->base_uri . $_ . $entry->extension . ")"
+    } @{ $entry->tags };
+    $content .= "\n";
     return $self->markdown($content);
 }
 
 sub render_as_fragment {
     my ( $self, $entry ) = @_;
     my $content = $entry->content;
-    $content .= "\nBy: ${\$entry->author} on ${\$entry->date}\n";
-    $content .= "\nTags: " . join ' ', map { "[$_](".$entry->base_uri.$_.$entry->extension.")" } @{ $entry->tags };
+    $content .= "By: ${\$entry->author} on ${\$entry->date}\n\n";
+    $content .= "Tags: " . join ' ', map {
+        "[$_](" . $entry->base_uri . $_ . $entry->extension . ")"
+    } @{ $entry->tags };
+    $content .= "\n";
     return $self->markdown($content);
 }
 
