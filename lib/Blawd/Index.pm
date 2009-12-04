@@ -74,7 +74,7 @@ Blawd::Index
 
 =head1 DESCRIPTION
 
-The Blawd::Index class implements indexes of Entries in a Blawed blog.
+The Blawd::Index class implements indexes of Entries in a Blawd blog.
 
 =head1 METHODS
 

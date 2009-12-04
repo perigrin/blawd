@@ -37,7 +37,7 @@ __END__
 
 =head1 NAME
 
-Blawd::RenderableH
+Blawd::Renderable
 
 =head1 SYNOPSIS
 
