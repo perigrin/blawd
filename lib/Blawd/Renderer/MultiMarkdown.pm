@@ -29,14 +29,17 @@ sub render {
     $content .= 'css: ' . $self->css . "\n";
     $content .= 'XHTML Header:' . $entry->headers . "\n";
     $content .= $entry->content;
-    $content .= "\nBy: ${\$entry->author} on ${\$entry->date}";
+    $content .= "\nBy: ${\$entry->author} on ${\$entry->date}\n";
+    $content .= "\nTags: " . join ' ', map { "[$_](".$entry->base_uri.$_.$entry->extension.")" } @{ $entry->tags };
     return $self->markdown($content);
 }
 
 sub render_as_fragment {
     my ( $self, $entry ) = @_;
-    return $self->markdown(
-        $entry->content . "\nBy: ${\$entry->author} on ${\$entry->date}" );
+    my $content = $entry->content;
+    $content .= "\nBy: ${\$entry->author} on ${\$entry->date}\n";
+    $content .= "\nTags: " . join ' ', map { "[$_](".$entry->base_uri.$_.$entry->extension.")" } @{ $entry->tags };
+    return $self->markdown($content);
 }
 
 __PACKAGE__->meta->make_immutable;
