@@ -5,6 +5,7 @@ use namespace::autoclean;
 use Bread::Board;
 use aliased 'Blawd::Renderer::RSS';
 use Moose::Util::TypeConstraints qw(duck_type);
+use List::MoreUtils qw(any uniq);
 
 use Blawd::Index;
 
@@ -49,6 +50,13 @@ sub build_app {
             dependencies => [ depends_on('storage'), ],
         );
 
+        service tags => (
+            block => sub {
+                [ uniq map { @{ $_->tags } } @{ $_[0]->param('entries') } ]
+            },
+            dependencies => [ depends_on('entries') ],
+        );
+
         service indexes => (
             block => sub {
                 my %common = (
@@ -65,12 +73,21 @@ sub build_app {
                         filename => 'rss',
                         renderer => RSS,
                         %common,
-                    )
+                    ),
+                    map {
+                        my $tag = $_;
+                        Blawd::Index->new(
+                            filename => $tag,
+                            title    => $_[0]->param('title') . ': ' . $tag,
+                            entries  => [ grep { $_->has_tag($tag) }
+                                               @{ $_[0]->param('entries') } ],
+                        )
+                    } @{ $_[0]->param('tags') },
                 ];
             },
             dependencies => [
                 depends_on('title'), depends_on('entries'),
-                depends_on('headers'),
+                depends_on('headers'), depends_on('tags'),
             ]
         );
 

@@ -28,6 +28,12 @@ sub _build_title {
     return '';
 }
 
+sub _build_tags {
+    $_[0]->content =~ /^Tags: (.*)\s*$/m;
+    return [ split ' ', $1 ] if $1;
+    return [];
+}
+
 with qw(Blawd::Entry::API);
 
 __PACKAGE__->meta->make_immutable;

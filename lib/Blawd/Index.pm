@@ -1,6 +1,7 @@
 package Blawd::Index;
 use Moose;
 use DateTime;
+use List::MoreUtils qw(uniq);
 use namespace::autoclean;
 
 with qw(Blawd::Renderable);
@@ -38,6 +39,10 @@ sub _build_content {
 
 sub _build_title {
     shift->filename;
+}
+
+sub _build_tags {
+    [ uniq map { @{ $_->tags } } shift->entries ]
 }
 
 sub BUILD {
