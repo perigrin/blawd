@@ -19,9 +19,6 @@ has entries => (
     },
 );
 
-sub _build_author { 'Unknown' }
-sub _build_date   { DateTime->now }
-
 has content => (
     isa        => 'Str',
     is         => 'ro',
@@ -41,10 +38,6 @@ sub _build_title {
     shift->filename;
 }
 
-sub _build_tags {
-    [ uniq map { @{ $_->tags } } shift->entries ]
-}
-
 sub BUILD {
     my ( $self, $p ) = @_;
 
@@ -53,7 +46,7 @@ sub BUILD {
     $self->meta->get_attribute('entries')->set_value( $self, \@entries );
 }
 
-with qw(Blawd::Entry::API);
+with qw(Blawd::Page);
 
 __PACKAGE__->meta->make_immutable;
 1;

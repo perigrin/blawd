@@ -24,27 +24,31 @@ sub _build_markdown_instance {
 has extension => ( isa => 'Str', is => 'ro', default => '.html' );
 
 sub render {
-    my ( $self, $entry ) = @_;
+    my ( $self, $page ) = @_;
     my $content = "Format: complete\n";
     $content .= 'css: ' . $self->css . "\n";
-    $content .= 'XHTML Header:' . $entry->headers . "\n";
-    $content .= $entry->content . "\n";
-    $content .= "By: ${\$entry->author} on ${\$entry->date}\n\n";
-    $content .= "Tags: " . join ' ', map {
-        "[$_](" . $entry->base_uri . $_ . $entry->extension . ")"
-    } @{ $entry->tags };
-    $content .= "\n";
+    $content .= 'XHTML Header:' . $page->headers . "\n";
+    $content .= $page->content . "\n";
+    if ($page->does('Blawd::Entry::API')) {
+        $content .= "By: ${\$page->author} on ${\$page->date}\n\n";
+        $content .= "Tags: " . join ' ', map {
+            "[$_](" . $page->base_uri . $_ . $page->extension . ")"
+        } @{ $page->tags };
+        $content .= "\n";
+    }
     return $self->markdown($content);
 }
 
 sub render_as_fragment {
-    my ( $self, $entry ) = @_;
-    my $content = $entry->content;
-    $content .= "By: ${\$entry->author} on ${\$entry->date}\n\n";
-    $content .= "Tags: " . join ' ', map {
-        "[$_](" . $entry->base_uri . $_ . $entry->extension . ")"
-    } @{ $entry->tags };
-    $content .= "\n";
+    my ( $self, $page ) = @_;
+    my $content = $page->content . "\n";
+    if ($page->does('Blawd::Entry::API')) {
+        $content .= "By: ${\$page->author} on ${\$page->date}\n\n";
+        $content .= "Tags: " . join ' ', map {
+            "[$_](" . $page->base_uri . $_ . $page->extension . ")"
+        } @{ $page->tags };
+        $content .= "\n";
+    }
     return $self->markdown($content);
 }
 

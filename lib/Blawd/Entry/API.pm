@@ -4,7 +4,7 @@ use MooseX::Types::DateTime qw(DateTime);
 use List::MoreUtils qw(any);
 use namespace::autoclean;
 
-with qw( Blawd::Renderable );
+with qw( Blawd::Renderable Blawd::Page );
 
 has author => (
     isa        => 'Str',
@@ -19,25 +19,15 @@ has date => (
     lazy_build => 1
 );
 
-has title => (
-    isa        => 'Str',
-    is         => 'ro',
-    lazy_build => 1,
-);
-
 has tags => (
     isa        => 'ArrayRef[Str]',
     is         => 'ro',
     lazy_build => 1,
 );
 
-has [qw(content filename)] => ( isa => 'Str', is => 'ro', required => 1, );
-has headers => ( isa => 'Str', is => 'ro', default => '' );
-
 requires qw(
   _build_author
   _build_date
-  _build_title
   _build_tags
 );
 
