@@ -1,5 +1,5 @@
 package Blawd::Cmd;
-use Moose;
+use Blawd::OO;
 extends qw(MooseX::App::Cmd);
 
 __PACKAGE__->meta->make_immutable;

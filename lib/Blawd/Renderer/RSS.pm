@@ -1,9 +1,6 @@
 package Blawd::Renderer::RSS;
-use Moose;
-use 5.10.0;
-use namespace::autoclean;
+use Blawd::OO;
 use XML::RSS;
-use MooseX::Aliases;
 with qw(Blawd::Renderer::API);
 
 has rss => (

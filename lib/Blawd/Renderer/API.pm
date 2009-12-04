@@ -1,6 +1,5 @@
 package Blawd::Renderer::API;
-use Moose::Role;
-use namespace::autoclean;
+use Blawd::OO::Role;
 
 requires qw(render);
 

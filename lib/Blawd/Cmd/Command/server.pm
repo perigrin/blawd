@@ -1,11 +1,8 @@
 package Blawd::Cmd::Command::server;
-use 5.10.0;
-use Moose;
-use namespace::autoclean;
+use Blawd::OO;
 use HTTP::Engine;
 use HTTP::Engine::Response;
 use Plack::Loader;
-use Blawd::Cmd::Container;
 
 extends qw(MooseX::App::Cmd::Command);
 
@@ -49,6 +46,7 @@ has container => (
 );
 
 sub _build_container {
+    require Blawd::Cmd::Container;
     Blawd::Cmd::Container->new( config => shift );
 }
 

@@ -1,7 +1,5 @@
 package Blawd::Renderer::MultiMarkdown;
-use Moose;
-use 5.10.0;
-use namespace::autoclean;
+use Blawd::OO;
 use Text::MultiMarkdown ();
 
 with qw(Blawd::Renderer::API);

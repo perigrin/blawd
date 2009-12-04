@@ -1,9 +1,5 @@
 package Blawd;
-use 5.10.0;
-use Moose 0.92;
-use namespace::autoclean;
-use Blawd::Index;
-use Blawd::Entry::MultiMarkdown;
+use Blawd::OO;
 
 our $VERSION = '0.01';
 

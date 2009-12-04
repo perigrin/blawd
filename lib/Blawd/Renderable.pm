@@ -1,8 +1,6 @@
 package Blawd::Renderable;
-use 5.10.0;
-use Moose::Role;
+use Blawd::OO::Role;
 use MooseX::Types::Path::Class qw(File);
-use namespace::autoclean;
 
 has base_uri => ( isa => 'Str', is => 'ro', default => '' );
 

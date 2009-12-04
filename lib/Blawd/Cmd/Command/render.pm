@@ -1,8 +1,5 @@
 package Blawd::Cmd::Command::render;
-use 5.10.0;
-use Moose;
-use namespace::autoclean;
-use Blawd;
+use Blawd::OO;
 extends qw(MooseX::App::Cmd::Command);
 
 has title => ( isa => 'Str', is => 'ro', default => 'Blawd' );
@@ -20,6 +17,7 @@ has container => (
 );
 
 sub _build_container {
+    require Blawd::Cmd::Container;
     Blawd::Cmd::Container->new( config => shift );
 }
 

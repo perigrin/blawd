@@ -1,8 +1,7 @@
 package Blawd::Entry::API;
-use Moose::Role;
+use Blawd::OO::Role;
 use MooseX::Types::DateTime qw(DateTime);
 use List::MoreUtils qw(any);
-use namespace::autoclean;
 
 with qw( Blawd::Renderable Blawd::Page );
 

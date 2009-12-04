@@ -1,7 +1,5 @@
 package Blawd::Storage::Git;
-use 5.10.0;
-use Moose;
-use namespace::autoclean;
+use Blawd::OO;
 extends qw(Git::PurePerl);
 with qw(Blawd::Storage::API);
 

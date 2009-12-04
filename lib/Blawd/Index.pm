@@ -1,8 +1,7 @@
 package Blawd::Index;
-use Moose;
+use Blawd::OO;
 use DateTime;
 use List::MoreUtils qw(uniq);
-use namespace::autoclean;
 
 with qw(Blawd::Renderable);
 

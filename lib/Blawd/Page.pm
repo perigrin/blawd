@@ -1,6 +1,5 @@
 package Blawd::Page;
-use Moose::Role;
-use namespace::autoclean;
+use Blawd::OO::Role;
 
 has title => (
     isa        => 'Str',

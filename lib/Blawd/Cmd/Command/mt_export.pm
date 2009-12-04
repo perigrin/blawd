@@ -1,7 +1,5 @@
 package Blawd::Cmd::Command::mt_export;
-use 5.10.0;
-use Moose;
-use namespace::autoclean;
+use Blawd::OO;
 extends qw(MooseX::App::Cmd::Command);
 use DBI;
 use Path::Class;

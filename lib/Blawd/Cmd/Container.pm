@@ -1,13 +1,8 @@
 package Blawd::Cmd::Container;
-use Moose;
-use namespace::autoclean;
-
+use Blawd::OO;
 use Bread::Board;
-use aliased 'Blawd::Renderer::RSS';
 use Moose::Util::TypeConstraints qw(duck_type);
 use List::MoreUtils qw(any uniq);
-
-use Blawd::Index;
 
 has config => (
     isa => duck_type( [qw(repo title)] ),
@@ -59,6 +54,7 @@ sub build_app {
 
         service indexes => (
             block => sub {
+                require Blawd::Index;
                 my %common = (
                     title   => $_[0]->param('title'),
                     entries => $_[0]->param('entries')
@@ -71,7 +67,7 @@ sub build_app {
                     ),
                     Blawd::Index->new(
                         filename => 'rss',
-                        renderer => RSS,
+                        renderer => 'Blawd::Renderer::RSS',
                         %common,
                     ),
                     map {
