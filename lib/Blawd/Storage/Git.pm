@@ -30,7 +30,7 @@ sub find_entries {
                     content        => $_->content,
                     filename       => $entry->filename,
                     storage_author => $commit->author->name,
-                    storage_time   => $commit->committed_time,
+                    storage_date   => $commit->committed_time,
                   ) unless $entry->filename =~ /^\./;
             }
         }
@@ -45,7 +45,7 @@ sub get_config {
     my ($config) = grep { $_->object->kind eq 'blob'
                        && $_->filename eq '.blawd' } $tree->directory_entries;
     return {} unless $config;
-    return $self->parse_config($config);
+    return $self->parse_config($config->object->content);
 }
 
 sub is_valid_location {
