@@ -1,0 +1,24 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use lib qw(lib);
+use File::ChangeNotify;
+
+use Blawd::Storage::Directory;
+use Blawd::Cmd::Container;
+
+my ($repo, $out) = @ARGV;
+die unless $repo && $out;
+
+my $watcher = File::ChangeNotify->instantiate_watcher(
+    directories => [$repo],
+    filter      => qr/^[^\.]/,
+);
+
+while ($watcher->wait_for_events) {
+    my $storage = Blawd::Storage::Directory->new(location => $repo);
+    my $container = Blawd::Cmd::Container->new(storage => $storage);
+    my $blawd = $container->build_app;
+    $_->render_to_file( $out . '/' . $_->filename . $_->extension )
+      for ( @{ $blawd->indexes }, $blawd->entries );
+}
