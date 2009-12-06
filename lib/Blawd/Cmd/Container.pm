@@ -17,10 +17,11 @@ sub build_app {
 
         service title => ( $cfg->{title} || 'Blawd' );
 
-        service headers => qq[
-	        <link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml" />
-                $cfg->{headers}
-	    ];
+        my $headers = <<'HEADERS';
+<link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml" />
+HEADERS
+        $headers .= $cfg->{headers} if exists $cfg->{headers};
+        service headers => $headers;
 
         service app => (
             class        => 'Blawd',
