@@ -90,6 +90,8 @@ Retrieve the named Blawd Entry.
 
 =item Memoize
 
+=item Module::Pluggable
+
 =item Moose => 0.92
 
 =item MooseX::Aliases
@@ -109,6 +111,8 @@ Retrieve the named Blawd Entry.
 =item Try::Tiny
 
 =item XML::RSS
+
+=item YAML
 
 =back
 

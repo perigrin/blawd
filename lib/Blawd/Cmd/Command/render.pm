@@ -2,7 +2,8 @@ package Blawd::Cmd::Command::render;
 use Blawd::OO;
 extends qw(MooseX::App::Cmd::Command);
 
-has title => ( isa => 'Str', is => 'ro', default => 'Blawd' );
+use Blawd::Storage;
+use Blawd::Cmd::Container;
 
 has [qw(repo output_dir)] => (
     isa      => 'Str',
@@ -17,13 +18,14 @@ has container => (
 );
 
 sub _build_container {
-    require Blawd::Cmd::Container;
-    Blawd::Cmd::Container->new( config => shift );
+    my $self = shift;
+    my $storage = Blawd::Storage->create_storage($self->repo);
+    Blawd::Cmd::Container->new(storage => $storage);
 }
 
 sub execute {
     my $self  = shift;
-    my $blawd = $self->container->build_app($self);
+    my $blawd = $self->container->build_app;
     $_->render_to_file( $self->output_dir . '/' . $_->filename . $_->extension )
       for ( @{ $blawd->indexes }, $blawd->entries );
 }

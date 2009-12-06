@@ -1,7 +1,19 @@
 package Blawd::Storage::Git;
 use Blawd::OO;
-extends qw(Git::PurePerl);
 with qw(Blawd::Storage::API);
+
+use Git::PurePerl;
+use Scalar::Util qw(reftype);
+use Try::Tiny;
+use YAML ();
+
+has git => (
+    is      => 'ro',
+    isa     => 'Git::PurePerl',
+    lazy    => 1,
+    default => sub { Git::PurePerl->new(gitdir => shift->location) },
+    handles => qr/.*/,
+);
 
 sub blawd_branch { return shift->master }
 
@@ -25,6 +37,38 @@ sub find_entries {
         }
     }
     return @output;
+}
+
+sub get_config {
+    my $self = shift;
+    my $tree = $self->master->tree;
+
+    my ($config) = grep { $_->object->kind eq 'blob'
+                       && $_->filename eq '.blawd' } $tree->directory_entries;
+    return {} unless $config;
+
+    my @parsed_cfg = YAML::Load($config->object->content);
+    if (@parsed_cfg != 1 || reftype($parsed_cfg[0]) ne 'HASH') {
+        die "Config must be a hash";
+    }
+
+    return $parsed_cfg[0];
+}
+
+sub is_valid_location {
+    my $class = shift;
+    my ($location) = shift;
+
+    my $valid = 1;
+    try {
+        my $git = Git::PurePerl->new(gitdir => $location);
+        $git->all_objects;
+    }
+    catch {
+        $valid = 0;
+    };
+
+    return $valid;
 }
 
 __PACKAGE__->meta->make_immutable;

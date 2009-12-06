@@ -1,24 +1,21 @@
 package Blawd::Cmd::Container;
 use Blawd::OO;
 use Bread::Board;
-use Moose::Util::TypeConstraints qw(duck_type);
 use List::MoreUtils qw(any uniq);
 
-has config => (
-    isa => duck_type( [qw(repo title)] ),
-    is => 'ro',
+has storage => (
+    is       => 'ro',
+    does     => 'Blawd::Storage::API',
     required => 1,
 );
 
 sub build_app {
     my ($self) = @_;
-    my $cfg = $self->config;
+    my $cfg = $self->storage->get_config;
 
     my $c = container Blawd => as {
 
-        service gitdir => ( $cfg->repo );
-
-        service title => ( $cfg->title );
+        service title => ( $cfg->{title} || 'Blawd' );
 
         service headers => q[
 	        <link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml" />
@@ -32,17 +29,10 @@ sub build_app {
             dependencies => [ depends_on('indexes'), depends_on('entries'), ]
         );
 
-        service storage => (
-            class        => 'Blawd::Storage::Git',
-            dependencies => [ depends_on('gitdir'), ]
-        );
-
         service entries => (
             block => sub {
-                my $store = $_[0]->param('storage');
-                [ sort { $b->date <=> $a->date } $store->find_entries ];
+                [ sort { $b->date <=> $a->date } $self->storage->find_entries ];
             },
-            dependencies => [ depends_on('storage'), ],
         );
 
         service tags => (

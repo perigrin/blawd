@@ -10,6 +10,7 @@ requires 'DBI';
 requires 'Git::PurePerl';
 requires 'HTTP::Engine';
 requires 'Memoize';
+requires 'Module::Pluggable';
 requires 'Moose' => '0.92';
 requires 'MooseX::Aliases';
 requires 'MooseX::Types::DateTime';
@@ -20,6 +21,7 @@ requires 'Path::Class';
 requires 'Text::MultiMarkdown' => '1.0.30';
 requires 'Try::Tiny';
 requires 'XML::RSS';
+requires 'YAML';
 
 build_requires 'Test::More' => 0.90;
 build_requires 'Git::Wrapper';

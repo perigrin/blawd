@@ -1,7 +1,13 @@
 package Blawd::Storage::API;
 use Blawd::OO::Role;
 
-requires 'find_entries';
+requires 'find_entries', 'get_config', 'is_valid_location';
+
+has location => (
+    isa      => 'Str',
+    is       => 'ro',
+    required => 1,
+);
 
 has entry_class => (
     isa     => 'Str',

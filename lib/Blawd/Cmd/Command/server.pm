@@ -46,8 +46,9 @@ has container => (
 );
 
 sub _build_container {
-    require Blawd::Cmd::Container;
-    Blawd::Cmd::Container->new( config => shift );
+    my $self = shift;
+    my $storage = Blawd::Storage->create_storage($self->repo);
+    Blawd::Cmd::Container->new(storage => $storage);
 }
 
 sub handle_request {
