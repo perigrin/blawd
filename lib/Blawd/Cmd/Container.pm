@@ -17,10 +17,9 @@ sub build_app {
 
         service title => ( $cfg->{title} || 'Blawd' );
 
-        service headers => q[
+        service headers => qq[
 	        <link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml" />
-	        <link rel="openid.server" href="http://www.myopenid.com/server" />
-	        <link rel="openid.delegate" href="http://openid.prather.org/chris" />
+                $cfg->{headers}
 	    ];
 
         service app => (
