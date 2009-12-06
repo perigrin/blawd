@@ -38,6 +38,13 @@ sub get_entry {
     return $entry;
 }
 
+sub render_all {
+    my $self = shift;
+    my ($output_dir) = @_;
+    $_->render_to_file( $output_dir . '/' . $_->filename . $_->extension )
+      for ( @{ $self->indexes }, $self->entries );
+}
+
 __PACKAGE__->meta->make_immutable;
 1;
 __END__

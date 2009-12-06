@@ -26,8 +26,7 @@ sub _build_container {
 sub execute {
     my $self  = shift;
     my $blawd = $self->container->build_app;
-    $_->render_to_file( $self->output_dir . '/' . $_->filename . $_->extension )
-      for ( @{ $blawd->indexes }, $blawd->entries );
+    $blawd->render_all($self->output_dir);
 }
 
 __PACKAGE__->meta->make_immutable;

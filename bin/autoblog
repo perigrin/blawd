@@ -19,6 +19,5 @@ while ($watcher->wait_for_events) {
     my $storage = Blawd::Storage::Directory->new(location => $repo);
     my $container = Blawd::Cmd::Container->new(storage => $storage);
     my $blawd = $container->build_app;
-    $_->render_to_file( $out . '/' . $_->filename . $_->extension )
-      for ( @{ $blawd->indexes }, $blawd->entries );
+    $blawd->render_all($out);
 }
