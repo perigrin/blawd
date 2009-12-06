@@ -32,7 +32,7 @@ sub find_entries {
                     content  => $_->content,
                     filename => $entry->filename,
                     commit   => $commit,
-                  );
+                  ) unless $entry->filename =~ /^\./;
             }
         }
     }
