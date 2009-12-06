@@ -8,6 +8,7 @@ use Path::Class;
 use Blawd;
 
 use aliased 'Blawd::Cmd::Container';
+use aliased 'Blawd::Storage';
 
 BEGIN {
     try { use Git::Wrapper }
@@ -18,23 +19,19 @@ my $directory = 'my-blog';
 dir($directory)->rmtree;
 dir($directory)->mkpath;
 
-{
-
-    package Config;
-    use Moose;
-    has title => ( isa => 'Str', is => 'ro', default => 'Blawd' );
-    has repo  => ( isa => 'Str', is => 'ro', default => "$directory/.git");
-}
-
 my $g = Git::Wrapper->new($directory);
 $g->init;
 
 my $hello = dir($directory)->file('hello');
 $hello->openw->print('Hello World');
 $g->add('hello');
+my $cfg = dir($directory)->file('.blawd');
+$cfg->openw->print("---\ntitle: Blawd\n");
+$g->add('.blawd');
 $g->commit( { message => 'first post' } );
 
-ok( my $blog = Container->new( config => Config->new )->build_app );
+my $storage = Storage->create_storage("$directory/.git");
+ok( my $blog = Container->new( storage => $storage )->build_app );
 
 ok( my @entries = $blog->entries, 'got entries' );
 is( @entries, 1, 'only one entry' );
@@ -64,7 +61,7 @@ $bye->openw->print('Goodbye World');
 $g->add('goodbye');
 $g->commit( { message => 'second post' } );
 
-$blog = Container->new( config => Config->new )->build_app;
+$blog = Container->new( storage => $storage )->build_app;
 ok( my @entries = $blog->entries, 'got entries' );
 is(scalar @entries, 2, 'got two entries');
 ok( $_->does('Blawd::Entry::API'), 'does Blawd::Entry::API' ) for @entries;
@@ -130,7 +127,7 @@ END_POST
     $g->commit( { message => 'lorem post ' . $_ } );
 }
 
-$blog = Container->new( config => Config->new )->build_app;
+$blog = Container->new( storage => $storage )->build_app;
 isa_ok( $blog->get_index('index'), 'Blawd::Index' );
 is( $blog->get_index('index')->size, 11, 'index is the right size' );
 like(

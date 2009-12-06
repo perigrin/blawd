@@ -14,19 +14,12 @@ use aliased 'Git::PurePerl::Actor';
 use aliased 'Git::PurePerl::NewObject::Commit';
 
 use aliased 'Blawd::Cmd::Container';
+use aliased 'Blawd::Storage';
 
 my $directory = 'blog-bare.git';
 dir($directory)->rmtree;
 
 my $store = Git::PurePerl->init( gitdir => $directory );
-
-{
-
-    package Config;
-    use Moose;
-    has title => ( isa => 'Str', is => 'ro', default => 'Blawd' );
-    has repo  => ( isa => 'Str', is => 'ro', default => $directory );
-}
 
 # SET UP A POST
 
@@ -35,16 +28,23 @@ my $hello_mtime = DateTime->from_epoch( epoch => 1240341682 );
 my $hello_blob = Blob->new( content => 'Hello World' );
 is( $hello_blob->sha1, '5e1c309dae7f45e0f39b1bf3ac3cd9db12e7d689',
     'right sha1' );
+my $cfg_blob = Blob->new( content => "---\ntitle: Blawd\n" );
 
 $store->put_object($hello_blob);
+$store->put_object($cfg_blob);
 
 my $hello = DirectoryEntry->new(
     mode     => '100644',
     filename => 'hello',
     sha1     => $hello_blob->sha1,
 );
+my $cfg = DirectoryEntry->new(
+    mode     => '100644',
+    filename => '.blawd',
+    sha1     => $cfg_blob->sha1,
+);
 
-my $tree = Tree->new( directory_entries => [$hello] );
+my $tree = Tree->new( directory_entries => [$hello, $cfg] );
 
 $store->put_object($tree);
 
@@ -66,7 +66,8 @@ my $commit = Commit->new(
 $store->put_object($commit);
 
 # TEST THE POST
-ok( my $blog = Container->new( config => Config->new )->build_app );
+my $storage = Storage->create_storage($directory);
+ok( my $blog = Container->new( storage => $storage )->build_app );
 ok( my @entries = $blog->entries, 'got entries' );
 is( scalar @entries, 1, 'got only one post' );
 ok( $_->does('Blawd::Entry::API'), 'does Blawd::Entry::API' ) for @entries;
@@ -95,6 +96,11 @@ $tree = Tree->new(
             filename => 'hello',
             sha1     => $hello_blob->sha1,
         ),
+        DirectoryEntry->new(
+            mode     => '100644',
+            filename => '.blawd',
+            sha1     => $cfg_blob->sha1,
+        ),
     ]
 );
 
@@ -116,7 +122,7 @@ $commit = Commit->new(
 );
 $store->put_object($commit);
 
-$blog = Container->new( config => Config->new )->build_app;
+$blog = Container->new( storage => $storage )->build_app;
 
 ok( @entries = $blog->entries, 'got entries' );
 is( scalar @entries, 2, 'got two posts' );
