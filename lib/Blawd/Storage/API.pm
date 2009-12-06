@@ -3,8 +3,6 @@ use Blawd::OO::Role;
 
 requires 'find_entries';
 
-sub blawd_branch { return shift->master }
-
 has entry_class => (
     isa     => 'Str',
     is      => 'ro',
@@ -40,10 +38,6 @@ The Blawd::Storage::API Role implements an interface for Blawd Storage
 Classes
 
 =head1 METHODS
-
-=head2 blawd_branch
-
-The Branch that this Blawd instance renders from.
 
 =head2 default_entry_class
 

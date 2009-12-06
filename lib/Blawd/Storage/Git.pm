@@ -3,6 +3,8 @@ use Blawd::OO;
 extends qw(Git::PurePerl);
 with qw(Blawd::Storage::API);
 
+sub blawd_branch { return shift->master }
+
 sub find_entries {
     my ($self) = @_;
 
@@ -50,6 +52,10 @@ The Blawd::Storage::Git class implements ...
 =head2 find_entries (Git::PurePerl::Object::Commit $commit)
 
 Find all the entries in a given commit.
+
+=head2 blawd_branch
+
+The Branch that this Blawd instance renders from.
 
 =head1 BUGS AND LIMITATIONS
 
