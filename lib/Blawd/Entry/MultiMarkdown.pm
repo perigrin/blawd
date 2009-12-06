@@ -5,19 +5,17 @@ use MooseX::Types::DateTimeX qw(DateTime);
 
 sub _build_renderer { 'Blawd::Renderer::MultiMarkdown' }
 
-has commit => ( is => 'ro', required => 1 );
-
 sub _build_date {
     my $c = $_[0]->content;
     $c =~ m/^Date:\s+(.*)/m;
     return to_DateTime($1) if $1;
-    return $_[0]->commit->committed_time;
+    return $_[0]->storage_date;
 }
 
 sub _build_author {
     $_[0]->content =~ /^Author: (.*)\s*$/m;
     return $1 if $1;
-    return $_[0]->commit->author->name;
+    return $_[0]->storage_author;
 }
 
 sub _build_title {

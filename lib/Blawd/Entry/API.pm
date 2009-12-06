@@ -5,10 +5,21 @@ use List::MoreUtils qw(any);
 
 with qw( Blawd::Renderable Blawd::Page );
 
+has storage_author => (
+    isa        => 'Str',
+    is         => 'ro',
+);
+
 has author => (
     isa        => 'Str',
     is         => 'ro',
     lazy_build => 1,
+);
+
+has storage_date => (
+    isa        => DateTime,
+    is         => 'ro',
+    coerce     => 1,
 );
 
 has date => (

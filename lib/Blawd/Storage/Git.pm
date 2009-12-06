@@ -28,9 +28,10 @@ sub find_entries {
             when ( $_->kind eq 'blob' ) {
                 push @output,
                   $self->new_entry(
-                    content  => $_->content,
-                    filename => $entry->filename,
-                    commit   => $commit,
+                    content        => $_->content,
+                    filename       => $entry->filename,
+                    storage_author => $commit->author->name,
+                    storage_time   => $commit->committed_time,
                   ) unless $entry->filename =~ /^\./;
             }
         }
