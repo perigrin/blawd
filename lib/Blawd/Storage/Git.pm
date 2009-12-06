@@ -3,7 +3,6 @@ use Blawd::OO;
 with qw(Blawd::Storage::API);
 
 use Git::PurePerl;
-use Scalar::Util qw(reftype);
 use Try::Tiny;
 
 has git => (

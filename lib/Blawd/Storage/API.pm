@@ -1,6 +1,7 @@
 package Blawd::Storage::API;
 use Blawd::OO::Role;
 
+use Scalar::Util qw(reftype);
 use YAML ();
 
 requires 'find_entries', 'get_config', 'is_valid_location';
