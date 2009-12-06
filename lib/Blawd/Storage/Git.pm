@@ -5,7 +5,6 @@ with qw(Blawd::Storage::API);
 use Git::PurePerl;
 use Scalar::Util qw(reftype);
 use Try::Tiny;
-use YAML ();
 
 has git => (
     is      => 'ro',
@@ -46,13 +45,7 @@ sub get_config {
     my ($config) = grep { $_->object->kind eq 'blob'
                        && $_->filename eq '.blawd' } $tree->directory_entries;
     return {} unless $config;
-
-    my @parsed_cfg = YAML::Load($config->object->content);
-    if (@parsed_cfg != 1 || reftype($parsed_cfg[0]) ne 'HASH') {
-        die "Config must be a hash";
-    }
-
-    return $parsed_cfg[0];
+    return $self->parse_config($config);
 }
 
 sub is_valid_location {
