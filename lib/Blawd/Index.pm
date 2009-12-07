@@ -1,7 +1,5 @@
 package Blawd::Index;
 use Blawd::OO;
-use DateTime;
-use List::MoreUtils qw(uniq);
 
 with qw(Blawd::Renderable);
 

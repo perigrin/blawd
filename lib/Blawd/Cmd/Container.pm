@@ -1,7 +1,7 @@
 package Blawd::Cmd::Container;
 use Blawd::OO;
 use Bread::Board;
-use List::MoreUtils qw(any uniq);
+use List::MoreUtils qw(uniq);
 
 has storage => (
     is       => 'ro',

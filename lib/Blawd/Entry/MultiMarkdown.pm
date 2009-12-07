@@ -1,6 +1,5 @@
 package Blawd::Entry::MultiMarkdown;
 use Blawd::OO;
-use MooseX::Types::Path::Class qw(File);
 use MooseX::Types::DateTimeX qw(DateTime);
 
 sub _build_renderer { 'Blawd::Renderer::MultiMarkdown' }
