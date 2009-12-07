@@ -5,6 +5,8 @@ use DBI;
 use Path::Class;
 use Git::Wrapper;
 
+sub abstract { q[Import blog data from an existing Movable Type blog] }
+
 has author => ( isa => 'Str', is => 'ro', );
 
 has repo => (

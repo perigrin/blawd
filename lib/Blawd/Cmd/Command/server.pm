@@ -4,12 +4,15 @@ use HTTP::Engine;
 use HTTP::Engine::Response;
 use Plack::Loader;
 
+sub abstract { q[Run a local webserver to serve blog files] }
+
 extends qw(MooseX::App::Cmd::Command);
 
 has repo => (
     isa      => 'Str',
     is       => 'ro',
-    required => 1
+    required => 1,
+    documentation => q[Location of the blog's data files],
 );
 
 has _http_engine => (
@@ -18,8 +21,19 @@ has _http_engine => (
     lazy_build => 1,
 );
 
-has host => ( isa => 'Str', is => 'ro', default => 'localhost' );
-has port => ( isa => 'Int', is => 'ro', default => 1978 );
+has host => (
+    isa     => 'Str',
+    is      => 'ro',
+    default => 'localhost',
+    documentation => q[Local host for the server to bind to],
+);
+
+has port => (
+    isa     => 'Int',
+    is      => 'ro',
+    default => 1978,
+    documentation => q[Local port for the server to bind to],
+);
 
 sub _build__http_engine {
     my ($self) = @_;

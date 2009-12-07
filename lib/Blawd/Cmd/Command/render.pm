@@ -5,10 +5,20 @@ extends qw(MooseX::App::Cmd::Command);
 use Blawd::Storage;
 use Blawd::Cmd::Container;
 
-has [qw(repo output_dir)] => (
+sub abstract { q[Render blog as static HTML files] }
+
+has repo => (
     isa      => 'Str',
     is       => 'ro',
-    required => 1
+    required => 1,
+    documentation => q[Location of the blog's data files],
+);
+
+has output_dir => (
+    isa      => 'Str',
+    is       => 'ro',
+    required => 1,
+    documentation => q[Location to put the rendered output],
 );
 
 has container => (
