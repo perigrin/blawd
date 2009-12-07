@@ -6,8 +6,6 @@ use Plack::Loader;
 
 extends qw(MooseX::App::Cmd::Command);
 
-has title => ( isa => 'Str', is => 'ro', default => 'Blawd' );
-
 has repo => (
     isa      => 'Str',
     is       => 'ro',
@@ -40,6 +38,7 @@ sub execute {
 }
 
 has container => (
+    traits     => [qw(NoGetopt)],
     isa        => 'Blawd::Cmd::Container',
     is         => 'ro',
     lazy_build => 1,

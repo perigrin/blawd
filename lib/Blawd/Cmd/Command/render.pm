@@ -12,6 +12,7 @@ has [qw(repo output_dir)] => (
 );
 
 has container => (
+    traits     => [qw(NoGetopt)],
     isa        => 'Blawd::Cmd::Container',
     is         => 'ro',
     lazy_build => 1,
