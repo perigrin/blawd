@@ -3,6 +3,7 @@ use Blawd::OO::Role;
 
 use Scalar::Util qw(reftype);
 use YAML ();
+use Blawd::Entry;
 
 requires 'find_entries', 'get_config', 'is_valid_location';
 
@@ -12,27 +13,13 @@ has location => (
     required => 1,
 );
 
-has entry_class => (
-    isa     => 'Str',
-    is      => 'ro',
-    builder => 'default_entry_class'
-);
-
-sub default_entry_class {
-    'Blawd::Entry::MultiMarkdown';
-}
-
-sub new_entry {
-    my $entry_class = shift->entry_class;
-    Class::MOP::load_class($entry_class);
-    $entry_class->new(@_);
-}
+sub new_entry { shift; Blawd::Entry->new_entry(@_) }
 
 sub parse_config {
-    my $self = shift;
+    my $self       = shift;
     my ($cfg_data) = @_;
     my @parsed_cfg = YAML::Load($cfg_data);
-    if (@parsed_cfg != 1 || reftype($parsed_cfg[0]) ne 'HASH') {
+    if ( @parsed_cfg != 1 || reftype( $parsed_cfg[0] ) ne 'HASH' ) {
         die "Config must be a hash";
     }
 
