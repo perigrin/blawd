@@ -37,7 +37,7 @@ HEADERS
 
         service tags => (
             block => sub {
-                [ uniq map { @{ $_->tags } } @{ $_[0]->param('entries') } ]
+                [ uniq map { @{ $_->tags } } @{ $_[0]->param('entries') } ];
             },
             dependencies => [ depends_on('entries') ],
         );
@@ -60,19 +60,26 @@ HEADERS
                         renderer => 'Blawd::Renderer::RSS',
                         %common,
                     ),
+                    Blawd::Index->new(
+                        filename => 'atom',
+                        renderer => 'Blawd::Renderer::ATOM',
+                        %common,
+                    ),
                     map {
                         my $tag = $_;
                         Blawd::Index->new(
                             filename => $tag,
                             title    => $_[0]->param('title') . ': ' . $tag,
-                            entries  => [ grep { $_->has_tag($tag) }
-                                               @{ $_[0]->param('entries') } ],
-                        )
-                    } @{ $_[0]->param('tags') },
+                            entries  => [
+                                grep { $_->has_tag($tag) }
+                                  @{ $_[0]->param('entries') }
+                            ],
+                          )
+                      } @{ $_[0]->param('tags') },
                 ];
             },
             dependencies => [
-                depends_on('title'), depends_on('entries'),
+                depends_on('title'),   depends_on('entries'),
                 depends_on('headers'), depends_on('tags'),
             ]
         );
