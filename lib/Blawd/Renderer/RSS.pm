@@ -13,18 +13,16 @@ has extension => ( isa => 'Str', is => 'ro', default => '.xml' );
 
 sub _build_rss { XML::RSS->new( version => '1.0' ) }
 
-alias 'render_as_fragment' => 'render';
-
 sub render {
     my ( $self, $index ) = @_;
     $self->rss->channel(
         title => $index->title,
-        link  => $index->link,
+        link  => $self->base_uri . $index->link,
     );
     while ( my $entry = $index->next ) {
         $self->rss->add_item(
             title       => $entry->title,
-            link        => $entry->link,
+            link        => $self->base_uri . $entry->link,
             description => $entry->render_as_fragment,
             dc          => {
                 date   => $entry->date . 'Z',

@@ -9,7 +9,7 @@ use aliased 'XML::Atom::Entry';
 has extension => ( isa => 'Str', is => 'ro', default => '.xml' );
 
 has atom => (
-    isa        => 'XML::ATOM',
+    isa        => 'XML::Atom::Feed',
     is         => 'ro',
     lazy_build => 1,
     handles    => {
@@ -20,18 +20,16 @@ has atom => (
     }
 );
 
-sub _build_atom { Feed->new() }
-
-alias 'render_as_fragment' => 'render';
+sub _build_atom { Feed->new( Version => 1.0 ) }
 
 sub render {
     my ( $self, $index ) = @_;
     $self->feed_title( $index->title );
-    $self->feed_id( $index->link );
+    $self->feed_id( $self->base_uri . $index->link );
     while ( my $post = $index->next ) {
-        my $entry = Entry->new();
+        my $entry = Entry->new( Version => 1.0 );
         $entry->title( $post->title );
-        $entry->id( $post->link );
+        $entry->id( $self->base_uri . $post->link );
         $entry->content( $post->render_as_fragment );
         $self->add_entry($entry);
     }

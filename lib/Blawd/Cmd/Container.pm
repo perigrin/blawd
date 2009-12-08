@@ -15,10 +15,12 @@ sub build_app {
 
     my $c = container Blawd => as {
 
-        service title => ( $cfg->{title} || 'Blawd' );
+        service title    => ( $cfg->{title}    || 'Blawd' );
+        service base_uri => ( $cfg->{base_uri} || 'http://localhost/' );
 
         my $headers = <<'HEADERS';
 <link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml" />
+<link rel="alternate" type="application/atom+xml" title="Atom" href="atom.xml" />
 HEADERS
         $headers .= $cfg->{headers} if exists $cfg->{headers};
         service headers => $headers;
@@ -41,13 +43,20 @@ HEADERS
             },
             dependencies => [ depends_on('entries') ],
         );
-
+        service atom_renderer => (
+            class        => 'Blawd::Renderer::Atom',
+            dependencies => [ depends_on('base_uri') ],
+        );
+        service rss_renderer => (
+            class        => 'Blawd::Renderer::RSS',
+            dependencies => [ depends_on('base_uri') ],
+        );
         service indexes => (
             block => sub {
                 require Blawd::Index;
                 my %common = (
                     title   => $_[0]->param('title'),
-                    entries => $_[0]->param('entries')
+                    entries => $_[0]->param('entries'),
                 );
                 return [
                     Blawd::Index->new(
@@ -57,12 +66,12 @@ HEADERS
                     ),
                     Blawd::Index->new(
                         filename => 'rss',
-                        renderer => 'Blawd::Renderer::RSS',
+                        renderer => $_[0]->param('rss_renderer'),
                         %common,
                     ),
                     Blawd::Index->new(
                         filename => 'atom',
-                        renderer => 'Blawd::Renderer::ATOM',
+                        renderer => $_[0]->param('atom_renderer'),
                         %common,
                     ),
                     map {
@@ -79,8 +88,9 @@ HEADERS
                 ];
             },
             dependencies => [
-                depends_on('title'),   depends_on('entries'),
-                depends_on('headers'), depends_on('tags'),
+                depends_on('title'),        depends_on('atom_renderer'),
+                depends_on('rss_renderer'), depends_on('entries'),
+                depends_on('headers'),      depends_on('tags'),
             ]
         );
 

@@ -4,6 +4,9 @@ use Text::MultiMarkdown ();
 
 with qw(Blawd::Renderer::API);
 
+has css => ( isa => 'Str', is => 'ro', default => 'site.css' );
+
+
 has markdown_instance => (
     isa        => 'Text::MultiMarkdown',
     is         => 'ro',
@@ -27,11 +30,11 @@ sub render {
     $content .= 'css: ' . $self->css . "\n";
     $content .= 'XHTML Header:' . $page->headers . "\n";
     $content .= $page->content . "\n";
-    if ($page->does('Blawd::Entry::API')) {
+    if ( $page->does('Blawd::Entry::API') ) {
         $content .= "By: ${\$page->author} on ${\$page->date}\n\n";
-        $content .= "Tags: " . join ' ', map {
-            "[$_](" . $page->base_uri . $_ . $page->extension . ")"
-        } @{ $page->tags };
+        $content .= "Tags: " . join ' ',
+          map { "[$_](" . $self->base_uri . $_ . $page->extension . ")" }
+          @{ $page->tags };
         $content .= "\n";
     }
     return $self->markdown($content);
@@ -40,11 +43,11 @@ sub render {
 sub render_as_fragment {
     my ( $self, $page ) = @_;
     my $content = $page->content . "\n";
-    if ($page->does('Blawd::Entry::API')) {
+    if ( $page->does('Blawd::Entry::API') ) {
         $content .= "By: ${\$page->author} on ${\$page->date}\n\n";
-        $content .= "Tags: " . join ' ', map {
-            "[$_](" . $page->base_uri . $_ . $page->extension . ")"
-        } @{ $page->tags };
+        $content .= "Tags: " . join ' ',
+          map { "[$_](" . $self->base_uri . $_ . $page->extension . ")" }
+          @{ $page->tags };
         $content .= "\n";
     }
     return $self->markdown($content);

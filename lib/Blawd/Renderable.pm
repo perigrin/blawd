@@ -1,33 +1,35 @@
 package Blawd::Renderable;
 use Blawd::OO::Role;
 use MooseX::Types::Path::Class qw(File);
+use Moose::Util::TypeConstraints;
 
-has base_uri => ( isa => 'Str', is => 'ro', default => '' );
+subtype Renderer => as Object => where { $_->does('Blawd::Renderer::API') };
+coerce Renderer => from Str => via {
+    Class::MOP::load_class($_);
+    $_->new;
+};
 
 has renderer => (
-    isa        => 'Str',
     is         => 'ro',
+    isa        => 'Renderer',
     lazy_build => 1,
-);
-
-has _renderer_instance => (
-    is         => 'ro',
-    does       => 'Blawd::Renderer::API',
-    lazy_build => 1,
+    coerce     => 1,
     handles    => [qw(extension)],
 );
 
-sub _build__renderer_instance {
+sub link { $_[0]->filename . $_[0]->extension }
+
+sub render { my ($self) = @_; $self->renderer->render($self) }
+
+sub render_as_fragment {
     my ($self) = @_;
-    Class::MOP::load_class( $self->renderer );
-    $self->renderer->new();
+    $self->renderer->render_as_fragment($self);
 }
 
-sub link { $_[0]->base_uri . $_[0]->filename . $_[0]->extension }
-
-sub render             { $_[0]->_renderer_instance->render(@_) }
-sub render_as_fragment { $_[0]->_renderer_instance->render_as_fragment(@_) }
-sub render_to_file     { to_File( $_[1] )->openw->print( $_[0]->render ) }
+sub render_to_file {
+    my ( $self, $file ) = @_;
+    $self->renderer->render_to_file( $file, $self );
+}
 
 requires '_build_renderer';
 1;
