@@ -9,6 +9,7 @@ requires 'DateTime';
 requires 'DBI';
 requires 'Git::PurePerl';
 requires 'HTTP::Engine';
+requires 'Plack';
 requires 'Memoize';
 requires 'Module::Pluggable';
 requires 'Moose' => '0.92';
