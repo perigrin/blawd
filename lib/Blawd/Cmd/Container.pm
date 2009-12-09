@@ -1,5 +1,4 @@
 package Blawd::Cmd::Container;
-use 5.0100;
 use Blawd::OO;
 use Bread::Board;
 use List::MoreUtils qw(uniq);
@@ -38,12 +37,19 @@ FOOTERS
         service app => (
             class        => 'Blawd',
             lifecycle    => 'Singleton',
-            dependencies => [ depends_on('indexes'), depends_on('entries'), ]
+            dependencies => [
+                depends_on('indexes'), depends_on('entries'),
+                depends_on('render_factory')
+            ]
         );
 
         service entries => (
             block => sub {
-                [ sort { $b->date <=> $a->date } $self->storage->find_entries ];
+                [
+                    sort  { $b->date <=> $a->date }
+                      map { Blawd::Entry->new_entry($_) }
+                      $self->storage->find_entries
+                ];
             },
         );
 
@@ -53,44 +59,45 @@ FOOTERS
             },
             dependencies => [ depends_on('entries') ],
         );
-        service atom_renderer => (
-            class        => 'Blawd::Renderer::Atom',
-            dependencies => [ depends_on('base_uri') ],
+
+        service render_factory => (
+            class        => 'Blawd::Renderer',
+            lifecycle    => 'Singleton',
+            dependencies => [
+                depends_on('base_uri'), depends_on('headers'),
+                depends_on('footers'),
+            ],
         );
-        service rss_renderer => (
-            class        => 'Blawd::Renderer::RSS',
-            dependencies => [ depends_on('base_uri') ],
-        );
+
         service indexes => (
             block => sub {
                 require Blawd::Index;
-                my %common = (
-                    title   => $_[0]->param('title'),
-                    entries => [ @{ $_[0]->param('entries') }[ 0 ... 10 ] ],
-                );
                 return [
                     Blawd::Index->new(
-                        filename => 'index',
-                        headers  => $_[0]->param('headers'),
-                        footers  => $_[0]->param('footers'),
-                        %common,
+                        filename       => 'index',
+                        title          => $_[0]->param('title'),
+                        render_factory => $_[0]->param('render_factory'),
+                        entries => [ @{ $_[0]->param('entries') }[ 0 ... 10 ] ],
                     ),
                     Blawd::Index->new(
-                        filename => 'rss',
-                        renderer => $_[0]->param('rss_renderer'),
-                        %common,
+                        filename       => 'rss',
+                        title          => $_[0]->param('title'),
+                        render_factory => $_[0]->param('render_factory'),
+                        entries => [ @{ $_[0]->param('entries') }[ 0 ... 10 ] ],
                     ),
                     Blawd::Index->new(
-                        filename => 'atom',
-                        renderer => $_[0]->param('atom_renderer'),
-                        %common,
+                        filename       => 'atom',
+                        title          => $_[0]->param('title'),
+                        render_factory => $_[0]->param('render_factory'),
+                        entries => [ @{ $_[0]->param('entries') }[ 0 ... 10 ] ],
                     ),
                     map {
                         my $tag = $_;
                         Blawd::Index->new(
                             filename => $tag,
                             title    => $_[0]->param('title') . ': ' . $tag,
-                            entries  => [
+                            render_factory => $_[0]->param('render_factory'),
+                            entries        => [
                                 grep { $_->has_tag($tag) }
                                   @{ $_[0]->param('entries') }
                             ],
@@ -99,10 +106,8 @@ FOOTERS
                 ];
             },
             dependencies => [
-                depends_on('title'),        depends_on('atom_renderer'),
-                depends_on('rss_renderer'), depends_on('entries'),
-                depends_on('headers'),      depends_on('footers'),
-                depends_on('tags'),
+                depends_on('title'), depends_on('entries'),
+                depends_on('tags'),  depends_on('render_factory'),
             ]
         );
 
