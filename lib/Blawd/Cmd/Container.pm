@@ -15,7 +15,7 @@ sub build_app {
 
     my $c = container Blawd => as {
 
-        service title    => ( $cfg->{title}    || 'Blawd' );
+        service title    => ( $cfg->{title}    || 'The Room' );
         service base_uri => ( $cfg->{base_uri} || 'http://chris.prather.org/' );
 
         my $headers = <<'HEADERS';
