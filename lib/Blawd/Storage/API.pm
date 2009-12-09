@@ -13,7 +13,7 @@ has location => (
     required => 1,
 );
 
-sub new_entry { shift; Blawd::Entry->new_entry(@_) }
+sub new_entry { shift; return {@_} }
 
 sub parse_config {
     my $self       = shift;

@@ -35,7 +35,11 @@ HEADERS
 
         service entries => (
             block => sub {
-                [ sort { $b->date <=> $a->date } $self->storage->find_entries ];
+                [
+                    sort  { $b->date <=> $a->date }
+                      map { Blawd::Entry->new_entry($_) }
+                      $self->storage->find_entries
+                ];
             },
         );
 
@@ -68,12 +72,10 @@ HEADERS
                     ),
                     Blawd::Index->new(
                         filename => 'rss',
-                        renderer => $_[0]->param('rss_renderer'),
                         %common,
                     ),
                     Blawd::Index->new(
                         filename => 'atom',
-                        renderer => $_[0]->param('atom_renderer'),
                         %common,
                     ),
                     map {
