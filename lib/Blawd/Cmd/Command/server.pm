@@ -9,9 +9,9 @@ sub abstract { q[Run a local webserver to serve blog files] }
 extends qw(MooseX::App::Cmd::Command);
 
 has repo => (
-    isa      => 'Str',
-    is       => 'ro',
-    required => 1,
+    isa           => 'Str',
+    is            => 'ro',
+    required      => 1,
     documentation => q[Location of the blog's data files],
 );
 
@@ -22,16 +22,16 @@ has _http_engine => (
 );
 
 has host => (
-    isa     => 'Str',
-    is      => 'ro',
-    default => 'localhost',
+    isa           => 'Str',
+    is            => 'ro',
+    default       => 'localhost',
     documentation => q[Local host for the server to bind to],
 );
 
 has port => (
-    isa     => 'Int',
-    is      => 'ro',
-    default => 1978,
+    isa           => 'Int',
+    is            => 'ro',
+    default       => 1978,
     documentation => q[Local port for the server to bind to],
 );
 
@@ -59,9 +59,9 @@ has container => (
 );
 
 sub _build_container {
-    my $self = shift;
-    my $storage = Blawd::Storage->create_storage($self->repo);
-    Blawd::Cmd::Container->new(storage => $storage);
+    my $self    = shift;
+    my $storage = Blawd::Storage->create_storage( $self->repo );
+    Blawd::Cmd::Container->new( storage => $storage );
 }
 
 sub handle_request {
@@ -71,15 +71,15 @@ sub handle_request {
         $_ =~ s|^/||;
         when ('site.css') {
             my $css = q[
-				html { background-color: grey; }
-				body{ 
-					width: 900px; 
-					background: white; 
-					border: 1px solid black; 
-					padding-left: 25px;
-					padding-right: 25px;
-				}
-			];
+                html { background-color: grey; }
+                body{ 
+                    width: 900px; 
+                    background: white; 
+                    border: 1px solid black; 
+                    padding-left: 25px;
+                    padding-right: 25px;
+                }
+            ];
             my $res = HTTP::Engine::Response->new( body => $css );
             $res->headers->header( Content_Type => 'text/css' );
             return $res;
@@ -87,15 +87,18 @@ sub handle_request {
         $_ =~ s|\..*?$||;
         when ( $blawd->get_entry($_) ) {
             my $entry = $blawd->get_entry($_);
-            return HTTP::Engine::Response->new( body => $entry->render );
+            my $r     = $blawd->get_renderer_for($entry);
+            return HTTP::Engine::Response->new( body => $r->render($entry) );
         }
         when ( $blawd->get_index($_) ) {
             my $index = $blawd->get_index($_);
-            return HTTP::Engine::Response->new( body => $index->render );
+            my $r     = $blawd->get_renderer_for($index);
+            return HTTP::Engine::Response->new( body => $r->render($index) );
         }
         default {
-            return HTTP::Engine::Response->new(
-                body => $blawd->get_index('index')->render );
+            my $index = $blawd->get_index('index');
+            my $r     = $blawd->get_renderer_for($index);
+            return HTTP::Engine::Response->new( body => $r->render($index) );
         }
     }
 

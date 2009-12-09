@@ -17,7 +17,6 @@ has renderer => (
     handles    => [qw(extension)],
 );
 
-sub link { $_[0]->filename . $_[0]->extension }
 
 sub render { my ($self) = @_; $self->renderer->render($self) }
 

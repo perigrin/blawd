@@ -3,13 +3,19 @@ use Blawd::OO;
 use XML::RSS;
 with qw(Blawd::Renderer::API);
 
+sub is_valid_entry {
+    return unless $_[1]->isa('Blawd::Index');
+    return unless $_[1]->filename eq 'rss';    # XXX probably a bad idea
+    return 1;
+}
+
 has rss => (
     isa        => 'XML::RSS',
     is         => 'ro',
     lazy_build => 1,
 );
 
-has extension => ( isa => 'Str', is => 'ro', default => '.xml' );
+has '+extension' => ( default => '.xml' );
 
 sub _build_rss { XML::RSS->new( version => '1.0' ) }
 
@@ -17,13 +23,14 @@ sub render {
     my ( $self, $index ) = @_;
     $self->rss->channel(
         title => $index->title,
-        link  => $self->base_uri . $index->link,
+        link  => $self->get_link_for($index)
     );
     while ( my $entry = $index->next ) {
+        my $r = $self->get_renderer_for($entry);
         $self->rss->add_item(
             title       => $entry->title,
-            link        => $self->base_uri . $entry->link,
-            description => $entry->render_as_fragment,
+            link        => $self->get_link_for($entry),
+            description => $r->render_as_fragment($entry),
             dc          => {
                 date   => $entry->date . 'Z',
                 author => $entry->author,

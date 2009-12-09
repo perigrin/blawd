@@ -38,11 +38,19 @@ sub get_entry {
     return $entry;
 }
 
+has render_factory => (
+    isa      => 'Blawd::Renderer',
+    handles  => ['get_renderer_for'],
+    required => 1,
+);
+
 sub render_all {
     my $self = shift;
     my ($output_dir) = @_;
-    $_->render_to_file( $output_dir . '/' . $_->filename . $_->extension )
-      for ( @{ $self->indexes }, $self->entries );
+    for my $entry ( @{ $self->indexes }, $self->entries ) {
+        my $render = $self->get_renderer_for($entry);
+        $render->render_to_file( "$output_dir/", $entry->filename, $entry );
+    }
 }
 
 __PACKAGE__->meta->make_immutable;

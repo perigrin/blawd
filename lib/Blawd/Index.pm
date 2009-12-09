@@ -14,6 +14,12 @@ has entries => (
     },
 );
 
+has render_factory => (
+    isa      => 'Blawd::Renderer',
+    handles  => ['get_renderer_for'],
+    required => 1,
+);
+
 has content => (
     isa        => 'Str',
     is         => 'ro',
@@ -21,12 +27,17 @@ has content => (
 );
 
 sub _build_content {
-    join '', map {
-        my $title = $_->title;
-        my $text  = $_->render_as_fragment;
-        my $link  = $_->link;
-        qq[\n\n<div class="entry">$text\n<a href="$link">link</a></div>]
-    } shift->entries;
+    my $s = shift;
+    join '', (
+        "# ${\$s->title}\n",
+        map {
+            my $r     = $s->get_renderer_for($_);
+            my $title = $_->title;
+            my $text  = $r->render_as_fragment($_);
+            my $link  = $r->get_link_for($_);
+            qq[\n\n<div class="entry">$text\n<a href="$link">link</a></div>]
+          } $s->entries,
+    );
 }
 
 sub _build_title { shift->filename }
