@@ -1,8 +1,6 @@
 package Blawd::Index;
 use Blawd::OO;
 
-with qw(Blawd::Renderable);
-
 sub _build_renderer { 'Blawd::Renderer::MultiMarkdown' }
 
 has entries => (

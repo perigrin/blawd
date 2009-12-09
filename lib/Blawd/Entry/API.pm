@@ -3,7 +3,7 @@ use Blawd::OO::Role;
 use MooseX::Types::DateTime qw(DateTime);
 use List::MoreUtils qw(any);
 
-with qw( Blawd::Renderable Blawd::Page );
+with qw( Blawd::Page );
 
 has storage_author => (
     isa        => 'Str',

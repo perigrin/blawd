@@ -1,6 +1,8 @@
 package Blawd::Page;
 use Blawd::OO::Role;
 
+with qw(Blawd::Renderable);
+
 has title => (
     isa        => 'Str',
     is         => 'ro',
