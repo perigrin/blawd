@@ -1,4 +1,5 @@
 package Blawd::Cmd::Container;
+use 5.0100;
 use Blawd::OO;
 use Bread::Board;
 use List::MoreUtils qw(uniq);
@@ -24,6 +25,8 @@ sub build_app {
 HEADERS
         $headers .= $cfg->{headers} if exists $cfg->{headers};
         service headers => $headers;
+
+        service footers => $cfg->{footers} // '';
 
         service app => (
             class        => 'Blawd',

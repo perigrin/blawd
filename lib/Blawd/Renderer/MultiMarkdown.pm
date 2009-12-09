@@ -6,7 +6,6 @@ with qw(Blawd::Renderer::API);
 
 has css => ( isa => 'Str', is => 'ro', default => 'site.css' );
 
-
 has markdown_instance => (
     isa        => 'Text::MultiMarkdown',
     is         => 'ro',
@@ -37,6 +36,7 @@ sub render {
           @{ $page->tags };
         $content .= "\n";
     }
+    $content .= $page->footers . "\n";
     return $self->markdown($content);
 }
 

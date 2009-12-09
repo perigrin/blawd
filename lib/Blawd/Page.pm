@@ -10,7 +10,11 @@ has title => (
 );
 
 has [qw(content filename)] => ( isa => 'Str', is => 'ro', required => 1, );
-has headers => ( isa => 'Str', is => 'ro', default => '' );
+has headers => ( isa => 'Str', is => 'ro', lazy_build => 1 );
+sub _build_headers { '' }
+
+has footers => ( isa => 'Str', is => 'ro', lazy_build => 1 );
+sub _build_footers { '' }
 
 requires qw(_build_title);
 
