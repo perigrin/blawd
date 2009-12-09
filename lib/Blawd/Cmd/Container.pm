@@ -1,5 +1,4 @@
 package Blawd::Cmd::Container;
-use 5.0100;
 use Blawd::OO;
 use Bread::Board;
 use List::MoreUtils qw(uniq);
