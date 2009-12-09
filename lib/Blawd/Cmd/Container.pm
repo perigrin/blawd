@@ -56,7 +56,7 @@ HEADERS
                 require Blawd::Index;
                 my %common = (
                     title   => $_[0]->param('title'),
-                    entries => $_[0]->param('entries'),
+                    entries => [ @{ $_[0]->param('entries') }[ 0 ... 10 ] ],
                 );
                 return [
                     Blawd::Index->new(

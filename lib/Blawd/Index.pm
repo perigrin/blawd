@@ -31,16 +31,11 @@ sub _build_content {
     } shift->entries;
 }
 
-sub _build_title {
-    shift->filename;
-}
+sub _build_title { shift->filename }
 
 sub BUILD {
     my ( $self, $p ) = @_;
-
-    my @entries = ( sort { $b->date cmp $a->date } @{ $p->{entries} } );
-    @entries = @entries[ 0 .. 10 ] if @entries > 10;
-    $self->meta->get_attribute('entries')->set_value( $self, \@entries );
+    $self->meta->get_attribute('entries')->set_value( $self, $p->{entries} );
 }
 
 with qw(Blawd::Page);
