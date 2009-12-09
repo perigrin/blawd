@@ -21,7 +21,7 @@ has content => (
 );
 
 sub _build_content {
-    join '', map {
+    join '', "# ${ $_[0]->title }\n", map {
         my $title = $_->title;
         my $text  = $_->render_as_fragment;
         my $link  = $_->link;
