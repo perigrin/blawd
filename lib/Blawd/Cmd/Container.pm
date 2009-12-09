@@ -17,7 +17,7 @@ sub build_app {
     my $c = container Blawd => as {
 
         service title    => ( $cfg->{title}    || 'Blawd' );
-        service base_uri => ( $cfg->{base_uri} || 'http://localhost/' );
+        service base_uri => ( $cfg->{base_uri} || 'http://chris.prather.org/' );
 
         my $headers = <<'HEADERS';
 <link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml" />
@@ -26,7 +26,14 @@ HEADERS
         $headers .= $cfg->{headers} if exists $cfg->{headers};
         service headers => $headers;
 
-        service footers => $cfg->{footers} // '';
+        service footers => $cfg->{footers} // <<'FOOTERS';
+<script type="text/javascript">
+        try {
+            var pageTracker = _gat._getTracker("UA-939082-2");
+            pageTracker._trackPageview();
+        } catch(err) {}
+</script>
+FOOTERS
 
         service app => (
             class        => 'Blawd',
@@ -65,6 +72,7 @@ HEADERS
                     Blawd::Index->new(
                         filename => 'index',
                         headers  => $_[0]->param('headers'),
+                        footers  => $_[0]->param('footers'),
                         %common,
                     ),
                     Blawd::Index->new(
@@ -93,7 +101,8 @@ HEADERS
             dependencies => [
                 depends_on('title'),        depends_on('atom_renderer'),
                 depends_on('rss_renderer'), depends_on('entries'),
-                depends_on('headers'),      depends_on('tags'),
+                depends_on('headers'),      depends_on('footers'),
+                depends_on('tags'),
             ]
         );
 

@@ -33,7 +33,8 @@ sub _build_title { shift->filename }
 
 sub BUILD {
     my ( $self, $p ) = @_;
-    $self->meta->get_attribute('entries')->set_value( $self, $p->{entries} );
+    $self->meta->get_attribute('entries')
+      ->set_value( $self, [ @{ $p->{entries} } ] );
 }
 
 with qw(Blawd::Page);
