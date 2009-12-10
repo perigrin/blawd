@@ -22,7 +22,7 @@ sub get_index {
 }
 
 has entries => (
-    isa     => 'ArrayRef[Blawd::Entry::MultiMarkdown]',
+    isa     => 'ArrayRef[Blawd::Entry::API]',
     traits  => ['Array'],
     handles => {
         find_entry => ['grep'],
@@ -38,11 +38,48 @@ sub get_entry {
     return $entry;
 }
 
+has renderers => (
+    isa     => 'ArrayRef[Blawd::Renderer::API]',
+    traits  => ['Array'],
+    handles => {
+        find_renderer => ['grep'],
+        renderers     => ['elements'],
+    },
+    required => 1,
+);
+
+sub get_renderer {
+    my ( $self, $name ) = @_;
+    return unless $name;
+    my ($renderer) = $self->find_renderer(
+        sub { blessed($_) eq "Blawd::Renderer::$name" }
+    );
+    return $renderer;
+}
+
 sub render_all {
     my $self = shift;
     my ($output_dir) = @_;
-    $_->render_to_file( $output_dir . '/' . $_->filename . $_->extension )
-      for ( @{ $self->indexes }, $self->entries );
+
+    # XXX: this should all eventually be configurable
+
+    my $html = $self->get_renderer('HTML');
+    $html->render_to_file(
+        $output_dir . '/' . $_->filename . $html->extension,
+        $_
+    ) for ( @{ $self->indexes }, $self->entries );
+
+    my $rss = $self->get_renderer('RSS');
+    $rss->render_to_file(
+        $output_dir . '/' . $_->filename . $rss->extension,
+        $_
+    ) for ( @{ $self->indexes } );
+
+    my $atom = $self->get_renderer('Atom');
+    $atom->render_to_file(
+        $output_dir . '/' . $_->filename . $atom->extension,
+        $_
+    ) for ( @{ $self->indexes } );
 }
 
 __PACKAGE__->meta->make_immutable;

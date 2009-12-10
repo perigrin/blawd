@@ -67,6 +67,7 @@ sub _build_container {
 sub handle_request {
     my ( $self, $req ) = @_;
     my $blawd = $self->container->build_app();
+    my $renderer = $blawd->get_renderer('HTML');
     given ( $req->path ) {
         $_ =~ s|^/||;
         when ('site.css') {
@@ -87,15 +88,20 @@ sub handle_request {
         $_ =~ s|\..*?$||;
         when ( $blawd->get_entry($_) ) {
             my $entry = $blawd->get_entry($_);
-            return HTTP::Engine::Response->new( body => $entry->render );
+            return HTTP::Engine::Response->new(
+                body => $renderer->render_page($entry)
+            );
         }
         when ( $blawd->get_index($_) ) {
             my $index = $blawd->get_index($_);
-            return HTTP::Engine::Response->new( body => $index->render );
+            return HTTP::Engine::Response->new(
+                body => $renderer->render_page($index)
+            );
         }
         default {
             return HTTP::Engine::Response->new(
-                body => $blawd->get_index('index')->render );
+                body => $renderer->render_page($blawd->get_index('index'))
+            );
         }
     }
 

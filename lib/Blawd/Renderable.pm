@@ -1,37 +1,49 @@
 package Blawd::Renderable;
 use Blawd::OO::Role;
-use MooseX::Types::Path::Class qw(File);
-use Moose::Util::TypeConstraints;
 
-subtype Renderer => as Object => where { $_->does('Blawd::Renderer::API') };
-coerce Renderer => from Str => via {
-    Class::MOP::load_class($_);
-    $_->new;
-};
-
-has renderer => (
+has title => (
+    isa        => 'Str',
     is         => 'ro',
-    isa        => 'Renderer',
     lazy_build => 1,
-    coerce     => 1,
-    handles    => [qw(extension)],
 );
 
-sub link { $_[0]->filename . $_[0]->extension }
+has filename => ( isa => 'Str', is => 'ro', required => 1, );
 
-sub render { my ($self) = @_; $self->renderer->render($self) }
+has headers => ( isa => 'Str', is => 'ro', lazy_build => 1 );
+sub _build_headers { '' }
 
-sub render_as_fragment {
-    my ($self) = @_;
-    $self->renderer->render_as_fragment($self);
+has body_header => ( isa => 'Str', is => 'ro', lazy_build => 1 );
+sub _build_body_header { '' }
+
+has body_footer => ( isa => 'Str', is => 'ro', lazy_build => 1 );
+sub _build_body_footer { '' }
+
+requires qw(_build_title render_page_default render_fragment_default);
+
+sub render_page {
+    my $self = shift;
+    my ($renderer) = @_;
+    confess "no renderer" unless defined $renderer;
+    (my $renderer_type = blessed($renderer)) =~ s/.*:://;
+    my $method = "render_page_$renderer_type";
+    if ($self->can($method)) {
+        return $self->$method($renderer);
+    }
+    return $self->render_page_default;
 }
 
-sub render_to_file {
-    my ( $self, $file ) = @_;
-    $self->renderer->render_to_file( $file, $self );
+sub render_fragment {
+    my $self = shift;
+    my ($renderer) = @_;
+    confess "no renderer" unless defined $renderer;
+    (my $renderer_type = blessed($renderer)) =~ s/.*:://;
+    my $method = "render_fragment_$renderer_type";
+    if ($self->can($method)) {
+        return $self->$method($renderer);
+    }
+    return $self->render_fragment_default;
 }
 
-requires '_build_renderer';
 1;
 __END__
 

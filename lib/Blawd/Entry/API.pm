@@ -3,7 +3,7 @@ use Blawd::OO::Role;
 use MooseX::Types::DateTime qw(DateTime);
 use List::MoreUtils qw(any);
 
-with qw( Blawd::Page );
+with qw( Blawd::Renderable );
 
 has storage_author => (
     isa        => 'Str',
@@ -29,6 +29,12 @@ has date => (
     lazy_build => 1
 );
 
+has content => (
+    isa        => 'Str',
+    is         => 'ro',
+    required   => 1,
+);
+
 has tags => (
     isa        => 'ArrayRef[Str]',
     is         => 'ro',
@@ -46,6 +52,9 @@ sub has_tag {
     my ($tag) = @_;
     return any { $_ eq $tag } @{ $self->tags };
 }
+
+sub render_page_default     { shift->content }
+sub render_fragment_default { shift->content }
 
 1;
 __END__

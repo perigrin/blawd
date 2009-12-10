@@ -9,21 +9,25 @@ has rss => (
     lazy_build => 1,
 );
 
-has extension => ( isa => 'Str', is => 'ro', default => '.xml' );
+has extension => ( isa => 'Str', is => 'ro', default => '.rss' );
 
 sub _build_rss { XML::RSS->new( version => '1.0' ) }
 
-sub render {
+sub render_page {
     my ( $self, $index ) = @_;
+    # if we have multiple actual content renderers, how do we choose which
+    # one is 'canonical', to point this link to? just hardcoding html for
+    # now, but this should probably be configurable or something
+    my $extension = '.html';
     $self->rss->channel(
         title => $index->title,
-        link  => $self->base_uri . $index->link,
+        link  => $self->base_uri . $index->filename . $extension,
     );
     while ( my $entry = $index->next ) {
         $self->rss->add_item(
             title       => $entry->title,
-            link        => $self->base_uri . $entry->link,
-            description => $entry->render_as_fragment,
+            link        => $self->base_uri . $entry->filename . $extension,
+            description => $entry->render_fragment($self),
             dc          => {
                 date   => $entry->date . 'Z',
                 author => $entry->author,

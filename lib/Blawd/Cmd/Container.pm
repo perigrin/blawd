@@ -25,12 +25,17 @@ HEADERS
         $headers .= $cfg->{headers} if exists $cfg->{headers};
         service headers => $headers;
 
-        service footers => $cfg->{footers} // '';
+        service body_header => $cfg->{body_header} // '';
+
+        service body_footer => $cfg->{body_footer} // '';
 
         service app => (
             class        => 'Blawd',
             lifecycle    => 'Singleton',
-            dependencies => [ depends_on('indexes'), depends_on('entries'), ]
+            dependencies => [
+                depends_on('indexes'), depends_on('entries'),
+                depends_on('renderers'),
+            ],
         );
 
         service entries => (
@@ -49,33 +54,29 @@ HEADERS
             },
             dependencies => [ depends_on('entries') ],
         );
-        service atom_renderer => (
-            class        => 'Blawd::Renderer::Atom',
-            dependencies => [ depends_on('base_uri') ],
-        );
-        service rss_renderer => (
-            class        => 'Blawd::Renderer::RSS',
+        service renderers => (
+            block => sub {
+                require Blawd::Renderer;
+                return [
+                    map { $_->new(base_uri => $_[0]->param('base_uri')) }
+                        Blawd::Renderer->renderers
+                ];
+            },
             dependencies => [ depends_on('base_uri') ],
         );
         service indexes => (
             block => sub {
                 require Blawd::Index;
+                my @entries = @{ $_[0]->param('entries') };
+                @entries = @entries[0..9] if @entries > 10;
                 my %common = (
                     title   => $_[0]->param('title'),
-                    entries => [ @{ $_[0]->param('entries') }[ 0 ... 10 ] ],
+                    entries => \@entries,
                 );
                 return [
                     Blawd::Index->new(
                         filename => 'index',
                         headers  => $_[0]->param('headers'),
-                        %common,
-                    ),
-                    Blawd::Index->new(
-                        filename => 'rss',
-                        %common,
-                    ),
-                    Blawd::Index->new(
-                        filename => 'atom',
                         %common,
                     ),
                     map {
@@ -92,9 +93,8 @@ HEADERS
                 ];
             },
             dependencies => [
-                depends_on('title'),        depends_on('atom_renderer'),
-                depends_on('rss_renderer'), depends_on('entries'),
-                depends_on('headers'),      depends_on('tags'),
+                depends_on('title'),   depends_on('entries'),
+                depends_on('headers'), depends_on('tags'),
             ]
         );
 

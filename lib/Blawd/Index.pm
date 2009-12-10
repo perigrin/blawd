@@ -1,10 +1,8 @@
 package Blawd::Index;
 use Blawd::OO;
 
-sub _build_renderer { 'Blawd::Renderer::MultiMarkdown' }
-
 has entries => (
-    isa      => 'ArrayRef',
+    isa      => 'ArrayRef[Blawd::Entry::API]',
     traits   => ['Array'],
     required => 1,
     handles  => {
@@ -14,21 +12,6 @@ has entries => (
     },
 );
 
-has content => (
-    isa        => 'Str',
-    is         => 'ro',
-    lazy_build => 1,
-);
-
-sub _build_content {
-    join '', map {
-        my $title = $_->title;
-        my $text  = $_->render_as_fragment;
-        my $link  = $_->link;
-        qq[\n\n<div class="entry">$text\n<a href="$link">link</a></div>]
-    } shift->entries;
-}
-
 sub _build_title { shift->filename }
 
 sub BUILD {
@@ -36,7 +19,33 @@ sub BUILD {
     $self->meta->get_attribute('entries')->set_value( $self, $p->{entries} );
 }
 
-with qw(Blawd::Page);
+sub render_page_default {
+    my $self = shift;
+    my ($renderer) = @_;
+    return $self->render_fragment($renderer);
+}
+
+sub render_fragment_default {
+    my $self = shift;
+    my ($renderer) = @_;
+    return join "\n\n", map { $_->render_fragment($renderer) } $self->entries;
+}
+
+sub render_page_HTML {
+    my $self = shift;
+    my ($renderer) = @_;
+    return $self->render_fragment_HTML($renderer);
+}
+
+sub render_fragment_HTML {
+    my $self = shift;
+    my ($renderer) = @_;
+    return join "\n", map {
+        '<div class="entry">' . $_->render_fragment($renderer) . '</div>'
+    } $self->entries;
+}
+
+with qw(Blawd::Renderable);
 
 __PACKAGE__->meta->make_immutable;
 1;
