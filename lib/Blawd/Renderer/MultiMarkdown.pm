@@ -4,19 +4,7 @@ use Text::MultiMarkdown ();
 
 with qw(Blawd::Renderer::API);
 
-sub is_valid_entry {
-    return 1 if $_[1]->isa('Blawd::Entry::MultiMarkdown');
-    if ( $_[1]->isa('Blawd::Index') ) {
-        return if $_[1]->filename eq 'atom';
-        return if $_[1]->filename eq 'rss';
-        return 1;
-    }
-    return;
-}
-
-has css     => ( isa => 'Str', is => 'ro', default => 'site.css' );
-has headers => ( isa => 'Str', is => 'ro', default => '' );
-has footers => ( isa => 'Str', is => 'ro', default => '' );
+has css => ( isa => 'Str', is => 'ro', default => 'site.css' );
 
 has markdown_instance => (
     isa        => 'Text::MultiMarkdown',
@@ -33,23 +21,22 @@ sub _build_markdown_instance {
     );
 }
 
-has '+extension' => ( default => '.html' );
+has extension => ( isa => 'Str', is => 'ro', default => '.html' );
 
 sub render {
     my ( $self, $page ) = @_;
     my $content = "Format: complete\n";
     $content .= 'css: ' . $self->css . "\n";
-    $content .= 'XHTML Header:' . $self->headers."\n";
+    $content .= 'XHTML Header:' . $page->headers . "\n";
     $content .= $page->content . "\n";
     if ( $page->does('Blawd::Entry::API') ) {
         $content .= "By: ${\$page->author} on ${\$page->date}\n\n";
         $content .= "Tags: " . join ' ',
-          map { "[$_](" . $self->base_uri . $_ . $self->extension . ")" }
+          map { "[$_](" . $self->base_uri . $_ . $page->extension . ")" }
           @{ $page->tags };
         $content .= "\n";
     }
-    $content .= $self->footers . "\n";
-
+    $content .= $page->footers . "\n";
     return $self->markdown($content);
 }
 
@@ -59,7 +46,7 @@ sub render_as_fragment {
     if ( $page->does('Blawd::Entry::API') ) {
         $content .= "By: ${\$page->author} on ${\$page->date}\n\n";
         $content .= "Tags: " . join ' ',
-          map { "[$_](" . $self->base_uri . $_ . $self->extension . ")" }
+          map { "[$_](" . $self->base_uri . $_ . $page->extension . ")" }
           @{ $page->tags };
         $content .= "\n";
     }

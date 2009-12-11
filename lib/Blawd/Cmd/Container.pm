@@ -30,10 +30,7 @@ HEADERS
         service app => (
             class        => 'Blawd',
             lifecycle    => 'Singleton',
-            dependencies => [
-                depends_on('indexes'), depends_on('entries'),
-                depends_on('render_factory')
-            ]
+            dependencies => [ depends_on('indexes'), depends_on('entries'), ]
         );
 
         service entries => (
@@ -52,45 +49,41 @@ HEADERS
             },
             dependencies => [ depends_on('entries') ],
         );
-
-        service render_factory => (
-            class        => 'Blawd::Renderer',
-            lifecycle    => 'Singleton',
-            dependencies => [
-                depends_on('base_uri'), depends_on('headers'),
-                depends_on('footers'),
-            ],
+        service atom_renderer => (
+            class        => 'Blawd::Renderer::Atom',
+            dependencies => [ depends_on('base_uri') ],
         );
-
+        service rss_renderer => (
+            class        => 'Blawd::Renderer::RSS',
+            dependencies => [ depends_on('base_uri') ],
+        );
         service indexes => (
             block => sub {
                 require Blawd::Index;
+                my %common = (
+                    title   => $_[0]->param('title'),
+                    entries => [ @{ $_[0]->param('entries') }[ 0 ... 10 ] ],
+                );
                 return [
                     Blawd::Index->new(
-                        filename       => 'index',
-                        title          => $_[0]->param('title'),
-                        render_factory => $_[0]->param('render_factory'),
-                        entries => [ @{ $_[0]->param('entries') }[ 0 ... 10 ] ],
+                        filename => 'index',
+                        headers  => $_[0]->param('headers'),
+                        %common,
                     ),
                     Blawd::Index->new(
-                        filename       => 'rss',
-                        title          => $_[0]->param('title'),
-                        render_factory => $_[0]->param('render_factory'),
-                        entries => [ @{ $_[0]->param('entries') }[ 0 ... 10 ] ],
+                        filename => 'rss',
+                        %common,
                     ),
                     Blawd::Index->new(
-                        filename       => 'atom',
-                        title          => $_[0]->param('title'),
-                        render_factory => $_[0]->param('render_factory'),
-                        entries => [ @{ $_[0]->param('entries') }[ 0 ... 10 ] ],
+                        filename => 'atom',
+                        %common,
                     ),
                     map {
                         my $tag = $_;
                         Blawd::Index->new(
                             filename => $tag,
                             title    => $_[0]->param('title') . ': ' . $tag,
-                            render_factory => $_[0]->param('render_factory'),
-                            entries        => [
+                            entries  => [
                                 grep { $_->has_tag($tag) }
                                   @{ $_[0]->param('entries') }
                             ],
@@ -99,8 +92,9 @@ HEADERS
                 ];
             },
             dependencies => [
-                depends_on('title'), depends_on('entries'),
-                depends_on('tags'),  depends_on('render_factory'),
+                depends_on('title'),        depends_on('atom_renderer'),
+                depends_on('rss_renderer'), depends_on('entries'),
+                depends_on('headers'),      depends_on('tags'),
             ]
         );
 
