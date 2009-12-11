@@ -68,7 +68,7 @@ sub render_fragment_HTML {
         map { "[$_](" . $renderer->base_uri . $_ . $renderer->extension . ')' }
         @{ $self->tags };
     $content .= "\n";
-    return $self->markdown($content);
+    return '<div class="entry">' . $self->markdown($content) . '</div>';
 }
 
 with qw(Blawd::Entry::API);
