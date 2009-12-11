@@ -30,11 +30,11 @@ sub render_page {
     my $extension = '.html';
     $self->feed_title( $index->title );
     $self->feed_id( $self->base_uri . $index->filename_base . $extension );
-    while ( my $post = $index->next ) {
+    for  my $post ( $index->entries ) {
         my $entry = Entry->new( Version => 1.0 );
         $entry->title( $post->title );
         $entry->id( $self->base_uri . $post->filename_base . $extension );
-        $entry->content( $post->render_as_fragment($self) );
+        $entry->content( $post->render_fragment($self) );
         $self->add_entry($entry);
     }
     return $self->feed_as_xml;
