@@ -37,6 +37,8 @@ $body_footer
 </body>
 </html>
 PAGE_FOOTER
+
+    return $content;
 }
 
 sub render_fragment {
