@@ -8,7 +8,6 @@ has entries => (
     handles  => {
         entries => 'elements',
         size    => 'count',
-        next    => 'shift',
     },
 );
 
