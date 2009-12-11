@@ -35,6 +35,12 @@ has content => (
     required   => 1,
 );
 
+has body => (
+    isa        => 'Str',
+    is         => 'ro',
+    lazy_build => 1,
+);
+
 has tags => (
     isa        => 'ArrayRef[Str]',
     is         => 'ro',
@@ -47,14 +53,16 @@ requires qw(
   _build_tags
 );
 
+sub _build_body { shift->content }
+
 sub has_tag {
     my $self = shift;
     my ($tag) = @_;
     return any { $_ eq $tag } @{ $self->tags };
 }
 
-sub render_page_default     { shift->content }
-sub render_fragment_default { shift->content }
+sub render_page_default     { shift->body }
+sub render_fragment_default { shift->body }
 
 1;
 __END__

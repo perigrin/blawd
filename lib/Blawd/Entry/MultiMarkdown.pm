@@ -43,6 +43,15 @@ sub _build_tags {
     return [];
 }
 
+sub _build_body {
+    my $self = shift;
+    my $content = $self->content;
+    if ((split(/\n/, $content))[0] =~ /^\w+:/) {
+        $content =~ s/^.*?\n\n//s;
+    }
+    return $content;
+}
+
 sub render_page_HTML {
     my $self = shift;
     my ($renderer) = @_;
