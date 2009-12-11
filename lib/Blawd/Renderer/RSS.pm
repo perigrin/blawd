@@ -21,12 +21,12 @@ sub render_page {
     my $extension = '.html';
     $self->rss->channel(
         title => $index->title,
-        link  => $self->base_uri . $index->filename . $extension,
+        link  => $self->base_uri . $index->filename_base . $extension,
     );
     while ( my $entry = $index->next ) {
         $self->rss->add_item(
             title       => $entry->title,
-            link        => $self->base_uri . $entry->filename . $extension,
+            link        => $self->base_uri . $entry->filename_base . $extension,
             description => $entry->render_fragment($self),
             dc          => {
                 date   => $entry->date . 'Z',

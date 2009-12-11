@@ -12,7 +12,7 @@ has entries => (
     },
 );
 
-sub _build_title { shift->filename }
+sub _build_title { shift->filename_base }
 
 sub BUILD {
     my ( $self, $p ) = @_;

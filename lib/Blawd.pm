@@ -63,23 +63,22 @@ sub render_all {
 
     # XXX: this should all eventually be configurable
 
-    my $html = $self->get_renderer('HTML');
-    $html->render_to_file(
-        $output_dir . '/' . $_->filename . $html->extension,
-        $_
-    ) for ( @{ $self->indexes }, $self->entries );
+    for my $entry ($self->entries) {
+        my $renderer = $self->get_renderer('HTML');
+        $renderer->render_to_file(
+            File::Spec->catfile($output_dir, $entry->filename_base . $renderer->extension),
+            $entry,
+        );
+    }
 
-    my $rss = $self->get_renderer('RSS');
-    $rss->render_to_file(
-        $output_dir . '/' . $_->filename . $rss->extension,
-        $_
-    ) for ( @{ $self->indexes } );
-
-    my $atom = $self->get_renderer('Atom');
-    $atom->render_to_file(
-        $output_dir . '/' . $_->filename . $atom->extension,
-        $_
-    ) for ( @{ $self->indexes } );
+    for my $index (@{ $self->indexes }) {
+        for my $renderer ($self->renderers) {
+            $renderer->render_to_file(
+                File::Spec->catfile($output_dir, $index->filename_base . $renderer->extension),
+                $index,
+            );
+        }
+    }
 }
 
 __PACKAGE__->meta->make_immutable;

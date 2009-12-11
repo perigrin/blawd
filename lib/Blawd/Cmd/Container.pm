@@ -42,7 +42,7 @@ HEADERS
             block => sub {
                 [
                     sort  { $b->date <=> $a->date }
-                      map { Blawd::Entry->new_entry($_) }
+                      map { Blawd::Entry->create_entry(%$_) }
                       $self->storage->find_entries
                 ];
             },

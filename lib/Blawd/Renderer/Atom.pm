@@ -29,11 +29,11 @@ sub render_page {
     # now, but this should probably be configurable or something
     my $extension = '.html';
     $self->feed_title( $index->title );
-    $self->feed_id( $self->base_uri . $index->filename . $extension );
+    $self->feed_id( $self->base_uri . $index->filename_base . $extension );
     while ( my $post = $index->next ) {
         my $entry = Entry->new( Version => 1.0 );
         $entry->title( $post->title );
-        $entry->id( $self->base_uri . $post->filename . $extension );
+        $entry->id( $self->base_uri . $post->filename_base . $extension );
         $entry->content( $post->render_as_fragment($self) );
         $self->add_entry($entry);
     }

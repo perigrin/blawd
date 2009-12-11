@@ -73,6 +73,13 @@ sub render_fragment_HTML {
     return '<div class="entry">' . $self->markdown($content) . '</div>';
 }
 
+sub is_valid_file {
+    my $class = shift;
+    my (%options) = @_;
+    return 1 if $options{filename} =~ /\.md(?:wn)?$/;
+    return 0;
+}
+
 with qw(Blawd::Entry::API);
 
 __PACKAGE__->meta->make_immutable;

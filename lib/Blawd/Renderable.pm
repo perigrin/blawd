@@ -8,6 +8,20 @@ has title => (
 );
 
 has filename => ( isa => 'Str', is => 'ro', required => 1, );
+has filename_base => ( isa => 'Str', is => 'ro', lazy_build => 1, );
+sub _build_filename_base {
+    my $self = shift;
+    my $filename = $self->filename;
+    $filename =~ s/\.\w+?$//;
+    return $filename;
+}
+has extension => ( isa => 'Str', is => 'ro', lazy_build => 1, );
+sub _build_extension {
+    my $self = shift;
+    my $filename = $self->filename;
+    $filename =~ /\.(\w+?)$/;
+    return $1;
+}
 
 has headers => ( isa => 'Str', is => 'ro', lazy_build => 1 );
 sub _build_headers { '' }

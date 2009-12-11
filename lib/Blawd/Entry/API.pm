@@ -51,6 +51,7 @@ requires qw(
   _build_author
   _build_date
   _build_tags
+  is_valid_file
 );
 
 sub _build_body { shift->content }
