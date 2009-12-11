@@ -40,7 +40,9 @@ sub render_page_HTML {
 sub render_fragment_HTML {
     my $self = shift;
     my ($renderer) = @_;
-    return join "\n", map { $_->render_fragment($renderer) } $self->entries;
+    return '<div class="index">' . "\n"
+         . (join "\n", map { $_->render_fragment($renderer) } $self->entries)
+         . '</div>' . "\n";
 }
 
 with qw(Blawd::Renderable);

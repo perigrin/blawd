@@ -56,7 +56,9 @@ sub render_page_HTML {
     my $self = shift;
     my ($renderer) = @_;
     # XXX: should be able to hook into this to add comments, etc
-    return $self->render_fragment_HTML($renderer);
+    return '<div class="single_entry">' . "\n"
+         . $self->render_fragment_HTML($renderer)
+         . '</div>' . "\n";
 }
 
 sub render_fragment_HTML {
