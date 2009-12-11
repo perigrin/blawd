@@ -6,7 +6,7 @@ with qw(Blawd::Renderer::API);
 use aliased 'XML::Atom::Feed';
 use aliased 'XML::Atom::Entry';
 
-has extension => ( isa => 'Str', is => 'ro', default => '.xml' );
+sub extension { '.atom' }
 
 has atom => (
     isa        => 'XML::Atom::Feed',
@@ -22,15 +22,19 @@ has atom => (
 
 sub _build_atom { Feed->new( Version => 1.0 ) }
 
-sub render {
+sub render_page {
     my ( $self, $index ) = @_;
+    # if we have multiple actual content renderers, how do we choose which
+    # one is 'canonical', to point this link to? just hardcoding html for
+    # now, but this should probably be configurable or something
+    my $extension = '.html';
     $self->feed_title( $index->title );
-    $self->feed_id( $self->base_uri . $index->link );
+    $self->feed_id( $self->base_uri . $index->filename_base . $extension );
     while ( my $post = $index->next ) {
         my $entry = Entry->new( Version => 1.0 );
         $entry->title( $post->title );
-        $entry->id( $self->base_uri . $post->link );
-        $entry->content( $post->render_as_fragment );
+        $entry->id( $self->base_uri . $post->filename_base . $extension );
+        $entry->content( $post->render_as_fragment($self) );
         $self->add_entry($entry);
     }
     return $self->feed_as_xml;

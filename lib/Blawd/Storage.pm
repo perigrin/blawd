@@ -8,10 +8,9 @@ use Module::Pluggable (
 
 sub determine_storage_class {
     my $class = shift;
-    my ($location) = @_;
 
     for my $storage_class ($class->storage_classes) {
-        return $storage_class if $storage_class->is_valid_location($location);
+        return $storage_class if $storage_class->is_valid_location(@_);
     }
     return;
 }
