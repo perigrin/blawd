@@ -3,9 +3,9 @@ use Blawd::OO;
 
 with qw(Blawd::Renderer::API);
 
-has css => ( isa => 'Str', is => 'ro', default => 'site.css' );
+sub extension { '.html' }
 
-has extension => ( isa => 'Str', is => 'ro', default => '.html' );
+has css => ( isa => 'Str', is => 'ro', default => 'site.css' );
 
 sub render_page {
     my ( $self, $renderable ) = @_;

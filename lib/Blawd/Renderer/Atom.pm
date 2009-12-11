@@ -6,7 +6,7 @@ with qw(Blawd::Renderer::API);
 use aliased 'XML::Atom::Feed';
 use aliased 'XML::Atom::Entry';
 
-has extension => ( isa => 'Str', is => 'ro', default => '.atom' );
+sub extension { '.atom' }
 
 has atom => (
     isa        => 'XML::Atom::Feed',

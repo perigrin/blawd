@@ -3,13 +3,13 @@ use Blawd::OO;
 use XML::RSS;
 with qw(Blawd::Renderer::API);
 
+sub extension { '.rss' }
+
 has rss => (
     isa        => 'XML::RSS',
     is         => 'ro',
     lazy_build => 1,
 );
-
-has extension => ( isa => 'Str', is => 'ro', default => '.rss' );
 
 sub _build_rss { XML::RSS->new( version => '1.0' ) }
 
