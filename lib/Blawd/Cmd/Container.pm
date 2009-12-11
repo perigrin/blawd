@@ -18,17 +18,6 @@ sub build_app {
         service title    => ( $cfg->{title}    || 'Blawd' );
         service base_uri => ( $cfg->{base_uri} || 'http://localhost/' );
 
-        my $headers = <<'HEADERS';
-<link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml" />
-<link rel="alternate" type="application/atom+xml" title="Atom" href="atom.xml" />
-HEADERS
-        $headers .= $cfg->{headers} if exists $cfg->{headers};
-        service headers => $headers;
-
-        service body_header => $cfg->{body_header} // '';
-
-        service body_footer => $cfg->{body_footer} // '';
-
         service app => (
             class        => 'Blawd',
             lifecycle    => 'Singleton',
@@ -57,9 +46,23 @@ HEADERS
         service renderers => (
             block => sub {
                 require Blawd::Renderer;
+
+                my %renderer_args = (
+                    HTML => {
+                        headers     => $cfg->{headers}     // '',
+                        body_header => $cfg->{body_header} // '',
+                        body_footer => $cfg->{body_footer} // '',
+                    },
+                );
+
                 return [
-                    map { $_->new(base_uri => $_[0]->param('base_uri')) }
-                        Blawd::Renderer->renderers
+                    map {
+                        my ($type) = /::(\w+)$/;
+                        $_->new(
+                            base_uri => $_[0]->param('base_uri'),
+                            %{ $renderer_args{$type} || {} }
+                        )
+                    } Blawd::Renderer->renderers
                 ];
             },
             dependencies => [ depends_on('base_uri') ],
@@ -93,8 +96,7 @@ HEADERS
                 ];
             },
             dependencies => [
-                depends_on('title'),   depends_on('entries'),
-                depends_on('headers'), depends_on('tags'),
+                depends_on('title'), depends_on('entries'), depends_on('tags'),
             ]
         );
 

@@ -23,15 +23,6 @@ sub _build_extension {
     return $1;
 }
 
-has headers => ( isa => 'Str', is => 'ro', lazy_build => 1 );
-sub _build_headers { '' }
-
-has body_header => ( isa => 'Str', is => 'ro', lazy_build => 1 );
-sub _build_body_header { '' }
-
-has body_footer => ( isa => 'Str', is => 'ro', lazy_build => 1 );
-sub _build_body_footer { '' }
-
 requires qw(_build_title render_page_default render_fragment_default);
 
 sub render_page {

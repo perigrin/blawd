@@ -7,12 +7,26 @@ sub extension { '.html' }
 
 has css => ( isa => 'Str', is => 'ro', default => 'site.css' );
 
+has headers     => ( isa => 'Str', is => 'ro', default => '' );
+has body_header => ( isa => 'Str', is => 'ro', default => '' );
+has body_footer => ( isa => 'Str', is => 'ro', default => '' );
+
 sub render_page {
     my ( $self, $renderable ) = @_;
     my $css = $self->css;
-    my $headers     = $renderable->headers     // '';
-    my $body_header = $renderable->body_header // '';
-    my $body_footer = $renderable->body_footer // '';
+    my $headers     = $self->headers     // '';
+    my $body_header = $self->body_header // '';
+    my $body_footer = $self->body_footer // '';
+
+    # XXX: need to figure out how to separate the rss/atom stuff out from here
+    # this is a pretty big hack
+    my $filename_base = $renderable->filename_base;
+    if ($renderable->isa('Blawd::Index')) {
+        $headers .= <<HEADERS;
+                <link rel="alternate" type="application/rss+xml" title="RSS" href="${filename_base}.rss" />
+                <link rel="alternate" type="application/atom+xml" title="Atom" href="${filename_base}.atom" />
+HEADERS
+    }
 
     my $content = <<PAGE_HEADER;
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
