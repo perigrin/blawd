@@ -37,6 +37,7 @@ sub render {
         my $entry = Entry->new( Version => 1.0 );
         $entry->title( $post->title );
         $entry->id( $self->get_link_for($post) );
+        $entry->link( $self->get_link_for($post) );
         $entry->content( $r->render_as_fragment($post) );
         $self->add_entry($entry);
     }
