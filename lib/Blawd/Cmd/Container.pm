@@ -21,6 +21,16 @@ sub build_app {
         my $headers = <<'HEADERS';
 <link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml" />
 <link rel="alternate" type="application/atom+xml" title="Atom" href="atom.xml" />
+  <link rel="openid.server"
+        href="http://www.myopenid.com/server" />
+  <link rel="openid.delegate"
+        href="http://openid.prather.org/chris" />
+  <link rel="openid2.local_id"
+        href="http://openid.prather.org/chris" />
+  <link rel="openid2.provider"
+        href="http://www.myopenid.com/server" />
+  <meta http-equiv="X-XRDS-Location"
+        content="http://www.myopenid.com/xrds?username=openid.prather.org/chris" />
 HEADERS
         $headers .= $cfg->{headers} if exists $cfg->{headers};
         service headers => $headers;
