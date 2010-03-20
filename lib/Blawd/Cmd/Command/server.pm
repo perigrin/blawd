@@ -1,8 +1,8 @@
 package Blawd::Cmd::Command::server;
 use Blawd::OO;
-use HTTP::Engine;
-use HTTP::Engine::Response;
 use Plack::Loader;
+use Plack::Request;
+use Plack::Response;
 
 sub abstract { q[Run a local webserver to serve blog files] }
 
@@ -13,12 +13,6 @@ has repo => (
     is       => 'ro',
     required => 1,
     documentation => q[Location of the blog's data files],
-);
-
-has _http_engine => (
-    isa        => 'HTTP::Engine',
-    is         => 'ro',
-    lazy_build => 1,
 );
 
 has host => (
@@ -35,20 +29,18 @@ has port => (
     documentation => q[Local port for the server to bind to],
 );
 
-sub _build__http_engine {
-    my ($self) = @_;
-    HTTP::Engine->new(
-        interface => {
-            module          => 'PSGI',
-            request_handler => sub { $self->handle_request(@_) },
-        },
-    );
-}
-
 sub execute {
     my $self = shift;
-    my $app = sub { $self->_http_engine->run(@_) };
-    Plack::Loader->auto( host => $self->host, port => $self->port )->run($app);
+    Plack::Loader->auto(
+        host => $self->host,
+        port => $self->port,
+    )->run(
+        sub {
+            my $req = Plack::Request->new(@_);
+            my $res = $self->handle_request($req);
+            return $res->finalize;
+        }
+    );
 }
 
 has container => (
@@ -68,40 +60,40 @@ sub handle_request {
     my ( $self, $req ) = @_;
     my $blawd = $self->container->build_app();
     my $renderer = $blawd->get_renderer('HTML');
+    my $res = Plack::Response->new(200, { Content_Type => 'text/html' });
     given ( $req->path ) {
         $_ =~ s|^/||;
         when ('site.css') {
             my $css = q[
-				html { background-color: grey; }
-				body{ 
-					width: 900px; 
-					background: white; 
-					border: 1px solid black; 
-					padding-left: 25px;
-					padding-right: 25px;
-				}
-			];
-            my $res = HTTP::Engine::Response->new( body => $css );
-            $res->headers->header( Content_Type => 'text/css' );
+                html {
+                    background-color: grey;
+                }
+                body {
+                    width: 900px;
+                    background: white;
+                    border: 1px solid black;
+                    padding-left: 25px;
+                    padding-right: 25px;
+                }
+            ];
+            $res->content_type('text/css');
+            $res->body($css);
             return $res;
         }
         $_ =~ s|\..*?$||;
         when ( $blawd->get_entry($_) ) {
             my $entry = $blawd->get_entry($_);
-            return HTTP::Engine::Response->new(
-                body => $renderer->render_page($entry)
-            );
+            $res->body($renderer->render_page($entry));
+            return $res;
         }
         when ( $blawd->get_index($_) ) {
             my $index = $blawd->get_index($_);
-            return HTTP::Engine::Response->new(
-                body => $renderer->render_page($index)
-            );
+            $res->body($renderer->render_page($index));
+            return $res;
         }
         default {
-            return HTTP::Engine::Response->new(
-                body => $renderer->render_page($blawd->get_index('index'))
-            );
+            $res->body($renderer->render_page($blawd->get_index('index')));
+            return $res;
         }
     }
 
