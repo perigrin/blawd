@@ -13,11 +13,6 @@ has entries => (
 
 sub _build_title { shift->filename_base }
 
-sub BUILD {
-    my ( $self, $p ) = @_;
-    $self->meta->get_attribute('entries')->set_value( $self, $p->{entries} );
-}
-
 sub render_page_default {
     my $self = shift;
     my ($renderer) = @_;
@@ -66,10 +61,6 @@ Blawd::Index
 =head1 DESCRIPTION
 
 The Blawd::Index class implements indexes of Entries in a Blawd blog.
-
-=head1 METHODS
-
-=head2 BUILD ()
 
 =head1 PRIVATE METHODS
 
