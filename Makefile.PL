@@ -13,6 +13,7 @@ requires 'Memoize';
 requires 'Module::Pluggable';
 requires 'Moose' => '0.92';
 requires 'MooseX::Aliases';
+requires 'MooseX::App::Cmd';
 requires 'MooseX::Types::DateTime';
 requires 'MooseX::Types::DateTimeX';
 requires 'MooseX::Types::Path::Class';
