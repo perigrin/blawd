@@ -38,9 +38,18 @@ sub _build_title {
 }
 
 sub _build_tags {
-    $_[0]->content =~ /^Tags: (.*)\s*$/m;
-    return [ split ' ', $1 ] if $1;
-    return [];
+    my $self = shift;
+    my $content = $self->content;
+
+    return [] unless $content =~ /^Tags: (.*)\s*$/m;
+    my $tags = $1;
+
+    if ($tags =~ /,/) {
+        # Comma-based tags
+        return [ split /\s*,\s*+/, $tags ];
+    } else {
+        return [ split ' ', $tags ];
+    }
 }
 
 sub _build_body {
