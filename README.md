@@ -22,7 +22,7 @@ tree of HTML documents, but it can be run as a server as well using
 
 ## Usage
 
-    blawd server --directory /path/to/blog.git 
+    blawd server --repo /path/to/blog.git 
 
 ## Coverage
 <pre>
