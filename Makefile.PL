@@ -21,6 +21,7 @@ requires 'Path::Class';
 requires 'Text::MultiMarkdown' => '1.0.30';
 requires 'Try::Tiny';
 requires 'XML::RSS';
+requires 'XML::Atom::Feed';
 requires 'YAML';
 
 build_requires 'Test::More' => 0.90;
