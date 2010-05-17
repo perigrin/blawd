@@ -1,7 +1,9 @@
 package Blawd::Cmd::Command::wp_export;
+use Blawd::OO;
 extends qw(Blawd::Cmd::Command::mt_export);
+use Path::Class;
 
-sub abstract { qw[Import blog data from an existing Wordpress blog] }
+sub abstract {q[Import blog data from an existing Wordpress blog]}
 
 sub _build_entry_query {
     q{
@@ -42,3 +44,4 @@ END_ENTRY
 __PACKAGE__->meta->make_immutable;
 
 1;
+__END__
