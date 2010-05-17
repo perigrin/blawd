@@ -43,7 +43,7 @@ sub _build_entry_query {
 		SELECT *
 		FROM mt_entry
 		WHERE entry_blog_id = ?
-		ORDER BY entry_authored_on ASC 
+		ORDER BY entry_authored_on ASC
 	}
 }
 
@@ -65,15 +65,20 @@ sub _build_git {
     Git::Wrapper->new( $self->repo );
 }
 
+before execute => sub {
+    my $self = shift;
+    unless (-d $self->repo) {
+        dir($self->repo)->mkpath;
+        $self->git->init;
+    }
+};
+
 sub execute {
     my $self = shift;
 
     my $sth = $self->dbi->prepare( $self->entry_query );
     $sth->execute( $self->blog_id );
-    unless ( -d $self->repo ) {
-        dir( $self->repo )->mkpath;
-        $self->git->init;
-    }
+
     my $i;
     while ( my $entry = $sth->fetchrow_hashref ) {
         chomp( my $name = lc $entry->{entry_title} );
@@ -82,7 +87,7 @@ sub execute {
         warn $name;
         $name = 'untitled' . ++$i unless $name;
         dir( $self->repo )->file($name)->openw->print( <<"END_ENTRY" );
-Title: $entry->{entry_title}  
+Title: $entry->{entry_title}
 Author: ${\$self->author}
 Date: $entry->{entry_authored_on}
 
