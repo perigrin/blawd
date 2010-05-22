@@ -70,8 +70,11 @@ sub build_app {
         service indexes => (
             block => sub {
                 require Blawd::Index;
+                require Blawd::Archive;
                 my @entries = @{ $_[0]->param('entries') };
-                @entries = @entries[0..9] if @entries > 10;
+                my $entries_per_pages = $cfg->{entries_per_pages} || 10;
+                @entries = @entries[0 .. ($entries_per_pages - 1)]
+                  if @entries > $entries_per_pages;
                 my %common = (
                     title   => $_[0]->param('title'),
                     entries => \@entries,
@@ -82,6 +85,11 @@ sub build_app {
                         headers  => $_[0]->param('headers'),
                         %common,
                     ),
+                    Blawd::Archive->new(
+                        filename => 'archives',
+                        title    => 'Archives',
+                        entries  => $_[0]->param('entries'),
+                      ),
                     map {
                         my $tag = $_;
                         Blawd::Index->new(
