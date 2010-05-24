@@ -2,10 +2,9 @@ package Blawd::Storage::API;
 use Blawd::OO::Role;
 
 use Scalar::Util qw(reftype);
-use YAML ();
 use Blawd::Entry;
 
-requires 'find_entries', 'get_config', 'is_valid_location';
+requires 'find_entries', 'is_valid_location';
 
 has location => (
     isa      => 'Str',
@@ -14,17 +13,6 @@ has location => (
 );
 
 sub new_entry { shift; return {@_} }
-
-sub parse_config {
-    my $self       = shift;
-    my ($cfg_data) = @_;
-    my @parsed_cfg = YAML::Load($cfg_data);
-    if ( @parsed_cfg != 1 || reftype( $parsed_cfg[0] ) ne 'HASH' ) {
-        die "Config must be a hash";
-    }
-
-    return $parsed_cfg[0];
-}
 
 1;
 __END__
