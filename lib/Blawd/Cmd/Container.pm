@@ -11,12 +11,14 @@ has storage => (
 
 sub build_app {
     my ($self) = @_;
-    my $cfg = $self->storage->get_config;
+
+    my $cfg = $self->storage->config;
 
     my $c = container Blawd => as {
 
-        service title    => ( $cfg->{title}    || 'Blawd' );
-        service base_uri => ( $cfg->{base_uri} || 'http://localhost/' );
+        service title => ($cfg->get(key => 'blawd.title') || 'Blawd');
+        service base_uri =>
+          ($cfg->get(key => 'blawd.baseuri') || 'http://localhost/');
 
         service app => (
             class        => 'Blawd',
@@ -49,9 +51,11 @@ sub build_app {
 
                 my %renderer_args = (
                     HTML => {
-                        headers     => $cfg->{headers}     // '',
-                        body_header => $cfg->{body_header} // '',
-                        body_footer => $cfg->{body_footer} // '',
+                        headers => $cfg->get(key => 'blawd.headers') // '',
+                        body_header => $cfg->get(key => 'blawd.bodyheader')
+                          // '',
+                        body_footer => $cfg->get(key => 'blawd.bodyfooter')
+                          // '',
                     },
                 );
 
@@ -72,13 +76,17 @@ sub build_app {
                 require Blawd::Index;
                 require Blawd::Archive;
                 my @entries = @{ $_[0]->param('entries') };
-                my $entries_per_pages = $cfg->{entries_per_pages} || 10;
+                my $entries_per_pages =
+                  $cfg->get(key => 'blawd.entriesperpages') || 10;
+
                 @entries = @entries[0 .. ($entries_per_pages - 1)]
                   if @entries > $entries_per_pages;
+
                 my %common = (
                     title   => $_[0]->param('title'),
                     entries => \@entries,
                 );
+
                 return [
                     Blawd::Index->new(
                         filename => 'index',
@@ -107,9 +115,7 @@ sub build_app {
                 depends_on('title'), depends_on('entries'), depends_on('tags'),
             ]
         );
-
     };
-
     return $c->fetch('app')->get;
 }
 
