@@ -38,16 +38,6 @@ sub find_entries {
     return @output;
 }
 
-sub get_config {
-    my $self = shift;
-    my $tree = $self->master->tree;
-
-    my ($config) = grep { $_->object->kind eq 'blob'
-                       && $_->filename eq '.blawd' } $tree->directory_entries;
-    return {} unless $config;
-    return $self->parse_config($config->object->content);
-}
-
 sub is_valid_location {
     my $class = shift;
     my ($location) = shift;
