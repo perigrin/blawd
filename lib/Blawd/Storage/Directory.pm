@@ -2,7 +2,25 @@ package Blawd::Storage::Directory;
 use Blawd::OO;
 with qw(Blawd::Storage::API);
 
+use Config::GitLike;
 use File::Spec;
+
+has config => (
+    is      => 'rw',
+    isa     => 'Config::GitLike',
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        my $config_file = File::Spec->catfile($self->location, '.blawd');
+        if (-r $config_file) {
+            my $c = Config::GitLike->new(confname => $config_file);
+            return $c;
+        }
+        else{
+            # XXX should we require a .blawd config file ?
+        }
+    }
+);
 
 sub _slurp {
     my $self = shift;
@@ -35,18 +53,6 @@ sub find_entries {
     }
 
     return @output;
-}
-
-sub get_config {
-    my $self = shift;
-    my $config_file = File::Spec->catfile($self->location, '.blawd');
-    if (-r $config_file) {
-        my $cfg_data = $self->_slurp($config_file);
-        return $self->parse_config($cfg_data);
-    }
-    else {
-        return {};
-    }
 }
 
 sub is_valid_location {
