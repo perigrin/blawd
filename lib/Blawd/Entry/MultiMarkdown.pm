@@ -2,6 +2,7 @@ package Blawd::Entry::MultiMarkdown;
 use Blawd::OO;
 use MooseX::Types::DateTimeX qw(DateTime);
 use Text::MultiMarkdown ();
+use URI::Escape;
 
 has markdown_instance => (
     isa        => 'Text::MultiMarkdown',
@@ -61,13 +62,19 @@ sub _build_body {
     return $content;
 }
 
+sub _build_permalink {
+    my ($self, $renderer) = @_;
+    my $link = uri_escape($_[0]->filename_base);
+    qq[<a href="${\$renderer->base_uri}${link}${\$renderer->extension}">permalink</a>];
+}
+
 sub render_page_HTML {
     my $self = shift;
     my ($renderer) = @_;
     # XXX: should be able to hook into this to add comments, etc
-    return '<div class="single_entry">' . "\n"
+    return '<article><div class="single_entry">' . "\n"
          . $self->render_fragment_HTML($renderer)
-         . '</div>' . "\n";
+         . '</div></article>' . "\n";
 }
 
 sub render_fragment_HTML {
@@ -78,8 +85,10 @@ sub render_fragment_HTML {
     $content .= "Tags: " . join ' ',
         map { "[$_](" . $renderer->base_uri . $_ . $renderer->extension . ')' }
         @{ $self->tags };
+    $content .= "\n\n";
+    $content .= $self->_build_permalink($renderer);
     $content .= "\n";
-    return '<div class="entry">' . $self->markdown($content) . '</div>';
+    return '<article><div class="entry">' . $self->markdown($content) . '</div></article>';
 }
 
 sub is_valid_file {

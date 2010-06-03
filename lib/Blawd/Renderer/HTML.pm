@@ -29,14 +29,15 @@ HEADERS
     }
 
     my $content = <<PAGE_HEADER;
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
+<!DOCTYPE html>
+    <html lang="en">
 	<head>
-		<link type="text/css" rel="stylesheet" href="$css" />
-                $headers
+            <meta charset="utf-8" />
+	    <link type="text/css" rel="stylesheet" href="$css" />
+            $headers
 	</head>
-<body>
-$body_header
+       <body>
+       $body_header
 PAGE_HEADER
 
     if ( $renderable->can('render_page_HTML') ) {
@@ -47,7 +48,9 @@ PAGE_HEADER
     }
 
     $content .= <<PAGE_FOOTER;
+<footer>
 $body_footer
+</footer>
 </body>
 </html>
 PAGE_FOOTER

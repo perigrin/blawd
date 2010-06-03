@@ -13,21 +13,21 @@ sub render_page_HTML {
     my $self = shift;
     my ($renderer) = @_;
     # XXX: should be able to hook into this to add comments, etc
-    return '<div class="single_entry">' . "\n"
+    return '<article><div class="single_entry">' . "\n"
          . $self->render_fragment_HTML($renderer)
-         . '</div>' . "\n";
+         . '</div></article>' . "\n";
 }
 
 sub render_fragment_HTML {
     my $self = shift;
     my ($renderer) = @_;
-    return '<div class="entry">' . "\n"
+    return '<article><div class="entry">' . "\n"
          . $self->content . "\n"
          . "<p>By: ${\$self->author} on ${\$self->date}</p>\n"
          . "<p>Tags: " . join(' ', map {
              qq[<a href="${\$renderer->base_uri}${_}${\$renderer->extension}">$_</a>]
            } @{ $self->tags }) . '</p>' . "\n"
-         . '</div>' . "\n";
+         . '</div></article>' . "\n";
 }
 
 sub is_valid_file {
