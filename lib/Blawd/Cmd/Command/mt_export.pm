@@ -12,7 +12,6 @@ has author => ( isa => 'Str', is => 'ro', );
 has repo => (
     isa      => 'Str',
     is       => 'ro',
-    coerce   => 1,
     required => 1
 );
 
