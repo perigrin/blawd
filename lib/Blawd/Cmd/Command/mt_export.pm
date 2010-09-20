@@ -40,11 +40,11 @@ sub _build_entry_query {
     my ($self) = @_;
 
     q{
-		SELECT *
-		FROM mt_entry
-		WHERE entry_blog_id = ?
-		ORDER BY entry_authored_on ASC 
-	}
+        SELECT *
+        FROM mt_entry
+        WHERE entry_blog_id = ?
+        ORDER BY entry_authored_on ASC
+    }
 }
 
 has dbi => (
@@ -82,7 +82,7 @@ sub execute {
         warn $name;
         $name = 'untitled' . ++$i unless $name;
         dir( $self->repo )->file($name)->openw->print( <<"END_ENTRY" );
-Title: $entry->{entry_title}  
+Title: $entry->{entry_title}
 Author: ${\$self->author}
 Date: $entry->{entry_authored_on}
 

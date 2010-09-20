@@ -57,30 +57,6 @@ sub get_renderer {
     return $renderer;
 }
 
-sub render_all {
-    my $self = shift;
-    my ($output_dir) = @_;
-
-    # XXX: this should all eventually be configurable
-
-    for my $entry ($self->entries) {
-        my $renderer = $self->get_renderer('HTML');
-        $renderer->render_to_file(
-            File::Spec->catfile($output_dir, $entry->filename_base . $renderer->extension),
-            $entry,
-        );
-    }
-
-    for my $index (@{ $self->indexes }) {
-        for my $renderer ($self->renderers) {
-            $renderer->render_to_file(
-                File::Spec->catfile($output_dir, $index->filename_base . $renderer->extension),
-                $index,
-            );
-        }
-    }
-}
-
 __PACKAGE__->meta->make_immutable;
 1;
 __END__
