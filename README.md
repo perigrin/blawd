@@ -4,7 +4,7 @@ Blawd is a blog aware git based content management system, similar to
 Bloxsom or Jekyll. It has managed to replace MovableType on my personal
 blog, but it is still very very rough. By default it will generate a
 tree of HTML documents, but it can be run as a server as well using
-[HTTP::Engine](http://search.cpan.org/dist/HTTP-Engine).
+[Plack](http://search.cpan.org/dist/Plack).
 
 ## The Name
 
