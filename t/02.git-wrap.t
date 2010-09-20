@@ -64,7 +64,7 @@ $g->add('goodbye');
 $g->commit( { message => 'second post' } );
 
 $blog = Container->new( storage => $storage )->build_app;
-ok( my @entries = $blog->entries, 'got entries' );
+ok( @entries = $blog->entries, 'got entries' );
 is( scalar @entries, 2, 'got two entries' );
 ok( $_->does('Blawd::Entry::API'), 'does Blawd::Entry::API' ) for @entries;
 
