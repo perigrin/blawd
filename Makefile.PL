@@ -29,5 +29,4 @@ build_requires 'Test::More' => 0.90;
 build_requires 'Git::Wrapper';
 
 auto_manifest;
-auto_repository;
 WriteAll;
