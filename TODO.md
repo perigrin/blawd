@@ -18,3 +18,5 @@
   together
 * Plugin API -- I really would like something like Dist::Zilla's plugin
   architecture to be able to control how things are hooked together
+* Templates -- A renderer for Template based rendering would be nice,
+  possibly starting with TT2 or Tiffany
