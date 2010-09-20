@@ -27,11 +27,11 @@ sub render_fragment_HTML {
     return '<div class="entry">' . "\n"
          . '<pre>' . "\n"
          . $content . "\n"
+         . '</pre>' . "\n"
          . "<p>By: ${\$self->author} on ${\$self->date}</p>\n"
          . "<p>Tags: " . join(' ', map {
              qq[<a href="${\$renderer->base_uri}${_}${\$renderer->extension}">$_</a>]
            } @{ $self->tags }) . '</p>' . "\n"
-         . '</pre>' . "\n"
          . '</div>' . "\n";
 }
 

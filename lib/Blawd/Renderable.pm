@@ -46,7 +46,7 @@ sub render_fragment {
     if ($self->can($method)) {
         return $self->$method($renderer);
     }
-    return $self->render_fragment_default;
+    return $self->render_fragment_default($renderer);
 }
 
 1;

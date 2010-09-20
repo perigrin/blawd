@@ -2,7 +2,7 @@ package Blawd::Index;
 use Blawd::OO;
 
 has entries => (
-    isa      => 'ArrayRef[Blawd::Entry::API]',
+    isa      => 'ArrayRef[Object]',
     traits   => ['Array'],
     required => 1,
     handles  => {

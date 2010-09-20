@@ -50,13 +50,18 @@ my ($author) = $g->config('user.name');
 is( $entries[0]->author,  $author,       'right author' );
 is( $entries[0]->content, 'Hello World', 'right content' );
 like(
-    $entries[0]->render_as_fragment,
-    qr"<p>Hello World\n",
+    $entries[0]->render_fragment_HTML,
+    qr"<pre>\nHello World\n",
     'render correctly'
 );
 
 isa_ok( $blog->index, 'Blawd::Index' );
-like( $blog->index->render, qr"<p>Hello World\n", 'index renders' );
+ok( my $renderer = $blog->get_renderer('HTML'), 'got renderer' );
+like(
+    $blog->index->render_fragment_HTML($renderer),
+    qr"<pre>\nHello World\n",
+    'index renders'
+);
 
 my $bye = dir($directory)->file('goodbye');
 $bye->openw->print('Goodbye World');
@@ -70,18 +75,21 @@ ok( $_->does('Blawd::Entry::API'), 'does Blawd::Entry::API' ) for @entries;
 
 # is( $entries[-1]->date, DateTime->from_epoch( epoch => $hello->stat->mtime, ),
 #     'right mtime' );
-is( $entries[-1]->author,  $author, 'right author' );
-is( $entries[-1]->content, 'Hello World',   'right content' );
-like( $entries[-1]->render_as_fragment, qr"<p>Hello World",
-    'render correctly' );
+is( $entries[-1]->author,  $author,       'right author' );
+is( $entries[-1]->content, 'Hello World', 'right content' );
+like(
+    $entries[-1]->render_fragment_HTML,
+    qr"<pre>\nHello World\n",
+    'render correctly'
+);
 
 # is( $entries[0]->date, DateTime->from_epoch( epoch => $bye->stat->mtime, ),
 #     'right mtime' );
 is( $entries[0]->author,  $author,         'right author' );
 is( $entries[0]->content, 'Goodbye World', 'right content' );
 like(
-    $entries[0]->render_as_fragment,
-    qr"<p>Goodbye World",
+    $entries[0]->render_fragment_HTML,
+    qr"<pre>\nGoodbye World\n",
     'render correctly'
 );
 
@@ -89,8 +97,8 @@ like(
 isa_ok( $blog->index, 'Blawd::Index' );
 is( $blog->index->size, 2, 'index is the right size' );
 like(
-    $blog->get_index('index')->render,
-    qr|<div class="entry"><p>Goodbye World|m,
+    $blog->get_index('index')->render_fragment_HTML($renderer),
+    qr|<div class="entry">\n<pre>\nGoodbye World|m,
     'index renders'
 );
 
@@ -99,10 +107,6 @@ is_deeply( $entries[0], $blog->get_entry('goodbye'), 'entry compares okay' );
 for ( 3 .. 15 ) {
     my $post = dir($directory)->file( 'lorem' . $_ );
     $post->openw->print(<<"END_POST");
-Title: Lorem Ipsum $_
-Author: Lauren Epson
-Date: 2008-11-01 19:23
-
 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
 tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
 veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
@@ -119,24 +123,30 @@ END_POST
 
 $blog = Container->new( storage => $storage )->build_app;
 isa_ok( $blog->get_index('index'), 'Blawd::Index' );
-is( $blog->get_index('index')->size, 11, 'index is the right size' );
+is( $blog->get_index('index')->size, 10, 'index is the right size' );
 like(
-    $blog->get_index('index')->render,
-    qr|<div class="entry"><p>Lorem|m,
+    $blog->get_index('index')->render_fragment_HTML($renderer),
+    qr|<div class="entry">\n<pre>\nLorem|m,
     'index renders'
 );
-is( ( $blog->entries )[-1]->author, 'Lauren Epson', 'right author' );
-like( ( $blog->entries )[-1]->render_as_fragment,
-    qr"<p>Lorem", 'render correctly' );
+like(
+    ( $blog->entries )[-1]->render_fragment_HTML,
+    qr"<pre>\nLorem",
+    'render correctly'
+);
 
-ok( my $rss = $blog->get_index('rss')->render, 'got RSS' );
-is( $blog->get_index('rss')->render_as_fragment,
-    $rss, 'fragment is the full RSS' );
+{
+    my $renderer = $blog->get_renderer('RSS');
+    die "couldn't find RSS renderer" unless $renderer;
+    ok( my $rss = $blog->get_index('index')->render_page_default($renderer),
+        'got RSS' );
+    is( $blog->get_index('index')->render_page_default($renderer),
+        $rss, 'fragment is the full RSS' );
 
-ok( $blog->get_index('rss')->render_to_file('/tmp/blawd_test_rss'),
-    'render to file' );
-is( file('/tmp/blawd_test_rss')->slurp, $rss, 'file output is good' );
-
+    # ok( $blog->get_index('rss')->render_to_file('/tmp/blawd_test_rss'),
+    #     'render to file' );
+    # is( file('/tmp/blawd_test_rss')->slurp, $rss, 'file output is good' );
+}
 done_testing;
 dir($directory)->rmtree;
 file('/tmp/blawd_test_rss')->remove;

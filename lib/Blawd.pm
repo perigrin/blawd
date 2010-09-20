@@ -22,7 +22,7 @@ sub get_index {
 }
 
 has entries => (
-    isa     => 'ArrayRef[Blawd::Entry::API]',
+    isa     => 'ArrayRef',
     traits  => ['Array'],
     handles => {
         find_entry => ['grep'],
@@ -39,7 +39,7 @@ sub get_entry {
 }
 
 has renderers => (
-    isa     => 'ArrayRef[Blawd::Renderer::API]',
+    isa     => 'ArrayRef',
     traits  => ['Array'],
     handles => {
         find_renderer => ['grep'],
