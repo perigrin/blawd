@@ -10,17 +10,15 @@ sub render_page_HTML {
     return '<div class="index"><h1>Archives</h1><ul>' . (
         join "\n",
         map {
-            my $link = uri_escape($_->filename_base);
+            my $link = uri_escape( $_->filename_base );
             "<li>"
               . qq[<a href="${\$renderer->base_uri}${link}.html">${\$_->title}</a>]
-              . ' &#8212; <span class="timestamp">'
+              . '<span class="timestamp"> '
               . $_->date
-              . "</span></li>"
+              . ")</span></li>"
           } $self->entries
     ) . "</ul></div>";
 }
-
-
 
 sub render_fragment_HTML {
     my $self = shift;
