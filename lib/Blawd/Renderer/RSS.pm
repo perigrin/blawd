@@ -29,7 +29,7 @@ sub render {
         my $r = $self->get_renderer_for($entry);
         $self->rss->add_item(
             title       => $entry->title,
-            link        => $self->get_link_for($entry),
+            link        => $self->base_uri.$entry->filename.'.html',
             description => $r->render_as_fragment($entry),
             dc          => {
                 date   => $entry->date . 'Z',

@@ -35,9 +35,12 @@ sub render {
     while ( my $post = $index->next ) {
         my $r = $self->get_renderer_for($post);
         my $entry = Entry->new( Version => 1.0 );
+	my $url = $self->base_uri.$post->filename.'.html'; 
         $entry->title( $post->title );
-        $entry->id( $self->get_link_for($post) );
-        $entry->link( $self->get_link_for($post) );
+        $entry->id($url);
+	my $link = XML::Atom::Link->new(Version => 1.0);
+	$link->href($url);
+        $entry->add_link($link);
         $entry->content( $r->render_as_fragment($post) );
         $self->add_entry($entry);
     }

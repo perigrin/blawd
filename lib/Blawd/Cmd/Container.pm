@@ -21,27 +21,25 @@ sub build_app {
         my $headers = <<'HEADERS';
 <link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml" />
 <link rel="alternate" type="application/atom+xml" title="Atom" href="atom.xml" />
-  <link rel="openid.server"
-        href="http://www.myopenid.com/server" />
-  <link rel="openid.delegate"
-        href="http://openid.prather.org/chris" />
-  <link rel="openid2.local_id"
-        href="http://openid.prather.org/chris" />
-  <link rel="openid2.provider"
-        href="http://www.myopenid.com/server" />
-  <meta http-equiv="X-XRDS-Location"
-        content="http://www.myopenid.com/xrds?username=openid.prather.org/chris" />
+  <link rel="openid.server" href="http://www.myopenid.com/server" />
+  <link rel="openid.delegate" href="http://openid.prather.org/chris" />
+  <link rel="openid2.local_id" href="http://openid.prather.org/chris" />
+  <link rel="openid2.provider" href="http://www.myopenid.com/server" />
 HEADERS
+
         $headers .= $cfg->{headers} if exists $cfg->{headers};
         service headers => $headers;
 
         service footers => $cfg->{footers} // <<'FOOTERS';
 <script type="text/javascript">
-        try {
-            var pageTracker = _gat._getTracker("UA-939082-2");
-            pageTracker._trackPageview();
-        } catch(err) {}
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
 </script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-939082-2");
+pageTracker._trackPageview();
+} catch(err) {}</script>
 FOOTERS
 
         service app => (
