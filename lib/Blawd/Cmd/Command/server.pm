@@ -1,4 +1,5 @@
 package Blawd::Cmd::Command::server;
+use 5.10.0;
 use Blawd::OO;
 use Plack::Loader;
 use Plack::Request;
@@ -31,6 +32,7 @@ has port => (
 
 sub execute {
     my $self = shift;
+    say "Starting up server on http://${\$self->host}:${\$self->port}";
     Plack::Loader->auto(
         host => $self->host,
         port => $self->port,

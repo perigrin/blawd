@@ -4,7 +4,7 @@ use Blawd::OO::Role;
 use Scalar::Util qw(reftype);
 use Blawd::Entry;
 
-requires 'find_entries', 'is_valid_location';
+requires qw(find_entries is_valid_location config);
 
 has location => (
     isa      => 'Str',

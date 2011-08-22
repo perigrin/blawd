@@ -1,6 +1,5 @@
 package Blawd::Storage::Git;
 use Blawd::OO;
-with qw(Blawd::Storage::API);
 
 use Git::PurePerl;
 use Try::Tiny;
@@ -13,7 +12,9 @@ has git => (
     handles => qr/.*/,
 );
 
-sub blawd_branch { return shift->master }
+with qw(Blawd::Storage::API);
+
+sub blawd_branch { return shift->master } # 'master' should be set by a config setting
 
 sub find_entries {
     my ($self) = @_;
