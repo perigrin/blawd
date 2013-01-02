@@ -1,6 +1,6 @@
 package Blawd::Entry::MultiMarkdown;
 use Blawd::OO;
-use MooseX::Types::DateTimeX qw(DateTime);
+use MooseX::Types::DateTime::MoreCoercions qw(DateTime);
 use Text::MultiMarkdown ();
 use URI::Escape;
 
