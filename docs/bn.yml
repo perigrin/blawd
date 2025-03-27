@@ -1,0 +1,71 @@
+# bn.yml - Configuration for BlawdNexus static site generator
+
+# Site-wide settings
+site:
+  title: "My BlawdNexus Site"
+  description: "A semantic knowledge base built with BlawdNexus"
+  base_url: "https://example.com"
+  language: "en"
+  author: "Chris Prather"
+  
+# Content sources
+content:
+  sources:
+    - type: directory
+      path: "./content"
+      pattern: "*.md"
+  
+# Output settings  
+output:
+  path: "./public"
+  clean: true  # Remove existing files before build
+  
+# Semantic analysis settings
+semantic:
+  adapter: "Indexer"  # Use existing semantic database
+  db_path: "/Users/perigrin/dev/commonplacebook/.index.db"
+  indexer_path: "/Users/perigrin/dev/commonplacebook/bin/indexer.pl"
+  min_similarity: 0.3
+  max_related: 5
+  
+# Index definitions
+indexes:
+  - name: main
+    type: entries
+    entries_per_page: 10
+    sort_by: date
+    sort_order: desc
+  - name: archives
+    type: archive
+    grouping: monthly
+  - name: tags
+    type: tag
+  - name: related
+    type: semantic
+    
+# Rendering options
+renderers:
+  - type: HTML
+    template: "default"
+    extension: ".html"
+  - type: RSS
+    count: 20
+    extension: ".xml"
+  
+# Template settings
+templates:
+  directory: "./templates"
+  
+# Plugins to apply during build
+plugins:
+  - name: "RelatedContent"
+    options:
+      title: "Related Content"
+      count: 3
+      show_similarity: true
+  
+# Server settings for local preview
+server:
+  port: 8080
+  host: "localhost"
+  watch: true

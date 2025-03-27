@@ -1,0 +1,9 @@
+#!/usr/bin/env perl
+use v5.40;
+use lib qw(lib);
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+
+use BlawdNexus::CLI;
+
+BlawdNexus::CLI->new->run(@ARGV);
