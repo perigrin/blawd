@@ -1,0 +1,37 @@
+{ 
+   # Process layout template with these variables
+   $title = $entry->title();
+   $page_url = $base_uri . $entry->filename_base();
+   $feed_links = 0;
+   $content = 
+   qq{
+<article class="entry">
+    <header>
+        <h1>} . $entry->title() . qq{</h1>
+    </header>
+    
+    <div class="entry-content">
+        $entry_content
+    </div>
+    
+    <footer class="entry-meta">
+        <p class="author-date">By } . $entry->author() . qq{ on } . $entry->date()->strftime('%B %d, %Y') . qq{</p>
+        
+        } . ((@{$entry->tags() // []}) ? qq{
+        <div class="tags">
+            <span>Tags:</span>
+            <ul class="tag-list">
+                } . join("\n                ", 
+                    map { qq{<li><a href="$base_uri\tag/} . filter($_, 'uri') . qq{$extension">$_</a></li>} } 
+                    @{$entry->tags()}
+                ) . qq{
+            </ul>
+        </div>
+        } : '') . qq{
+    </footer>
+</article>
+   };
+   
+   # Include the layout template with our variables
+   include('layout');
+}

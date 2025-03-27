@@ -1,0 +1,43 @@
+# Version control files and dirs
+\bRCS\b
+\bCVS\b
+,v$
+\B\.svn\b
+\B\.git\b
+\B\.gitignore\b
+\b_darcs\b
+
+# CPAN toolchain files and dirs
+^MANIFEST\.
+^Makefile$
+^Build$
+^Build.bat$
+^_build/
+\.swp$
+\.o$
+\.bs$
+\.gz$
+
+# Module::Build generated files and dirs
+^cover_db
+^nytprof
+^pm_to_blib$
+^blib/
+^.build/
+^_build/
+^MYMETA.
+
+# Temp, old, and emacs backup files
+~$
+\.old$
+^#.*#$
+^\.#
+\.bak$
+
+# Devel::Cover files
+^cover_db/
+
+# Development files that shouldn't be shipped
+^notes/
+^examples/
+^docs/

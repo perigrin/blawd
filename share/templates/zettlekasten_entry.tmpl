@@ -1,0 +1,95 @@
+{
+   # Process layout template with these variables
+   $title = $entry->title();
+   $page_url = $base_uri . $entry->filename_base();
+   $feed_links = 0;
+   
+   # Define content
+   $content = q{
+<article class="zettlekasten-entry">
+    <header class="entry-header">
+        <div class="entry-meta">
+            <div class="entry-id">} . $entry->filename_base() . q{</div>
+            <div class="entry-date">} . $entry->date()->strftime('%Y-%m-%d %H:%M') . q{</div>
+            
+            } . (@{$entry->tags() || []} > 0 ? q{
+            <div class="entry-tags">
+                } . (sub {
+                    my $tags_html = '';
+                    foreach my $tag (@{$entry->tags()}) {
+                        $tags_html .= q{
+                <a href="} . $base_uri . q{tag/} . filter($tag, 'uri') . $extension . q{" class="tag">#} . $tag . q{</a>};
+                    }
+                    return $tags_html;
+                }->()) . q{
+            </div>
+            } : '') . q{
+        </div>
+        
+        <h1 class="entry-title">} . $entry->title() . q{</h1>
+        
+        } . ($entry->metadata()->{summary} ? q{
+        <div class="entry-summary">
+            } . $entry->metadata()->{summary} . q{
+        </div>
+        } : '') . q{
+    </header>
+    
+    <div class="entry-content">
+        } . $entry_content . q{
+    </div>
+    
+    <footer class="entry-footer">
+        } . ($entry->metadata()->{author} || $entry->author() ? q{
+        <div class="entry-author">
+            By: } . ($entry->metadata()->{author} || $entry->author()) . q{
+        </div>
+        } : '') . q{
+        
+        } . ($entry->metadata()->{sources} && @{$entry->metadata()->{sources}} > 0 ? q{
+        <div class="entry-sources">
+            <h3>Sources</h3>
+            <ul class="sources-list">
+                } . (sub {
+                    my $sources_html = '';
+                    my $i = 1;
+                    foreach my $source (@{$entry->metadata()->{sources}}) {
+                        $sources_html .= q{
+                <li class="source-item">
+                    } . ($source->{url} ? q{
+                    <a href="} . $source->{url} . q{" class="source-link" target="_blank">
+                        } . ($source->{title} || $source->{url}) . q{
+                    </a>
+                    } : ($source->{title} || "Source " . $i)) . q{
+                    
+                    } . ($source->{author} ? q{
+                    by } . $source->{author} . q{
+                    } : '') . q{
+                </li>};
+                        $i++;
+                    }
+                    return $sources_html;
+                }->()) . q{
+            </ul>
+        </div>
+        } : '') . q{
+        
+        <!-- Semantic relationships will be added by plugins -->
+    </footer>
+</article>
+
+<!-- Add Zettlekasten references section -->
+} . include('zettlekasten_references', {
+    title => "References & Connections",
+    backlinks => $backlinks,
+    outgoing_links => $outgoing_links,
+    semantic_links => $semantic_links,
+    semantic_clusters => $semantic_clusters,
+    entry => $entry,
+    generate_export_links => 1
+}) . q{
+   };
+   
+   # Include the layout template with our variables
+   include('layout');
+}

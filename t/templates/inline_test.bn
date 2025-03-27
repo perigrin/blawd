@@ -1,0 +1,5 @@
+<ul>
+[% FOREACH item IN items %]
+  <li>[% item %][% IF loop.first %] (first)[% END %][% UNLESS loop.last %], [% END %]</li>
+[% END %]
+</ul>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{ $title }</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{ $base_uri }site.css">
+    { if ($feed_links) { }
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="{ $page_url }.rss">
+    <link rel="alternate" type="application/atom+xml" title="Atom" href="{ $page_url }.atom">
+    { } }
+    
+    <!-- Add D3.js for visualizations -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    
+    <!-- Custom headers -->
+    { $headers }
+</head>
+<body>
+    <div class="container">
+        <header class="site-header">
+            <div class="site-title">
+                <a href="{ $base_uri }">BlawdNexus</a>
+            </div>
+            
+            <nav class="site-nav">
+                <ul class="nav-menu">
+                    <li><a href="{ $base_uri }">Home</a></li>
+                    <li><a href="{ $base_uri }archives{ $extension }">Archives</a></li>
+                    <li><a href="{ $base_uri }tags{ $extension }">Tags</a></li>
+                    <li><a href="{ $base_uri }related{ $extension }">Knowledge Map</a></li>
+                    <li><a href="{ $base_uri }search.html">Search</a></li>
+                </ul>
+            </nav>
+            
+            <!-- Optional header content -->
+            { $body_header }
+        </header>
+        
+        <main class="site-content">
+            { $content }
+        </main>
+        
+        <footer class="site-footer">
+            <p>&copy; { $current_year } Generated with BlawdNexus</p>
+            
+            <!-- Optional footer content -->
+            { $body_footer }
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,43 @@
+{
+   # Process layout template with these variables
+   $title = $index->title();
+   $page_url = $base_uri . $index->filename_base();
+   $feed_links = 0;
+   
+   # Define content
+   $content = q{
+<div class="tag-index">
+    <header>
+        <h1>} . $index->title() . q{</h1>
+    </header>
+    
+    <div class="tag-cloud">
+        } . (sub {
+            my $tag_cloud = '';
+            my @sorted_tags = sort @{$tags->[0] || []};
+            
+            foreach my $tag (@sorted_tags) {
+                my $count = $tag_counts->{$tag} || 0;
+                my $class = int(($count / scalar(@sorted_tags)) * 5);
+                $class = 1 if $class < 1;
+                $class = 5 if $class > 5;
+                
+                $tag_cloud .= q{
+        <div class="tag-item">
+            <a href="} . $base_uri . q{tag/} . filter($tag, 'uri') . $extension . q{" 
+               class="tag-} . $class . q{">
+               } . $tag . q{
+            </a>
+            <span class="tag-count">(} . $count . q{)</span>
+        </div>};
+            }
+            
+            return $tag_cloud;
+        }->()) . q{
+    </div>
+</div>
+   };
+   
+   # Include the layout template with our variables
+   include('layout');
+}

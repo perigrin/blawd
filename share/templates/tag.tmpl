@@ -1,0 +1,42 @@
+{
+   # Process layout template with these variables
+   $title = "Entries tagged with " . $tag_name;
+   $page_url = $base_uri . "tag/" . filter($tag_name, 'uri');
+   $feed_links = 1;
+   
+   # Define content
+   $content = q{
+<div class="tag-entries">
+    <header>
+        <h1>Entries tagged with "} . $tag_name . q{"</h1>
+    </header>
+    
+    } . (sub {
+        my $entries_html = '';
+        foreach my $entry (@{$entries || []}) {
+            my $body = $entry->body();
+            my $summary = substr($body, 0, 300);
+            $summary =~ s/<.*?>//g; # Remove HTML tags
+            
+            $entries_html .= q{
+    <article class="entry-summary">
+        <h2><a href="} . $base_uri . $entry->filename_base() . $extension . q{">} . $entry->title() . q{</a></h2>
+        
+        <div class="entry-excerpt">
+            } . $summary . (length($body) > 300 ? '...' : '') . q{
+        </div>
+        
+        <footer class="entry-meta">
+            <span class="date">} . $entry->date()->strftime('%B %d, %Y') . q{</span>
+            by <span class="author">} . $entry->author() . q{</span>
+        </footer>
+    </article>};
+        }
+        return $entries_html;
+    }->()) . q{
+</div>
+   };
+   
+   # Include the layout template with our variables
+   include('layout');
+}

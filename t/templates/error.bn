@@ -1,0 +1,4 @@
+[% IF missing_var %]
+  [% missing_var %]
+[% END %]
+[% non_existent_var %]

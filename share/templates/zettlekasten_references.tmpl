@@ -1,0 +1,365 @@
+<div class="zettlekasten-references">
+    <h3>{ $title }</h3>
+    
+    <div class="reference-sections">
+        { if (@{$backlinks || []} > 0) { }
+        <div class="backlinks-section">
+            <h4>Backlinks</h4>
+            <ul class="backlinks-list">
+                {
+                    my $backlinks_html = '';
+                    foreach my $link (@{$backlinks}) {
+                        $backlinks_html .= qq{
+                <li class="backlink-item">
+                    <a href="$base_uri} . $link->{entry}->filename_base() . qq{$extension" 
+                       class="backlink-reference">
+                        } . $link->{entry}->title() . qq{
+                    </a>};
+                        
+                        if ($link->{context}) {
+                            $backlinks_html .= qq{
+                    <blockquote class="backlink-context">
+                        $link->{context}
+                    </blockquote>};
+                        }
+                        
+                        $backlinks_html .= qq{
+                </li>};
+                    }
+                    $backlinks_html;
+                }
+            </ul>
+        </div>
+        { } }
+        
+        { if (@{$outgoing_links || []} > 0) { }
+        <div class="outgoing-links-section">
+            <h4>References</h4>
+            <ul class="outgoing-links-list">
+                {
+                    my $outgoing_html = '';
+                    foreach my $link (@{$outgoing_links}) {
+                        $outgoing_html .= qq{
+                <li class="outgoing-link-item">
+                    <a href="$base_uri} . $link->{entry}->filename_base() . qq{$extension" 
+                       class="outgoing-reference">
+                        } . $link->{entry}->title() . qq{
+                    </a>};
+                        
+                        if ($link->{context}) {
+                            $outgoing_html .= qq{
+                    <blockquote class="outgoing-context">
+                        $link->{context}
+                    </blockquote>};
+                        }
+                        
+                        $outgoing_html .= qq{
+                </li>};
+                    }
+                    $outgoing_html;
+                }
+            </ul>
+        </div>
+        { } }
+        
+        { if (@{$semantic_links || []} > 0) { }
+        <div class="semantic-links-section">
+            <h4>Related Notes</h4>
+            <ul class="semantic-links-list">
+                {
+                    my $semantic_html = '';
+                    foreach my $link (@{$semantic_links}) {
+                        $semantic_html .= qq{
+                <li class="semantic-link-item">
+                    <a href="$base_uri} . $link->{entry}->filename_base() . qq{$extension" 
+                       class="semantic-reference">
+                        } . $link->{entry}->title() . qq{
+                    </a>
+                    <span class="semantic-similarity">
+                        (} . int($link->{similarity} * 100) . qq{%)
+                    </span>};
+                        
+                        if ($link->{shared_terms} && @{$link->{shared_terms}} > 0) {
+                            $semantic_html .= qq{
+                    <small class="shared-concepts">
+                        } . join(", ", @{$link->{shared_terms}}) . qq{
+                    </small>};
+                        }
+                        
+                        $semantic_html .= qq{
+                </li>};
+                    }
+                    $semantic_html;
+                }
+            </ul>
+        </div>
+        { } }
+    </div>
+    
+    { if (@{$semantic_clusters || []} > 0) { }
+    <div class="semantic-clusters">
+        <h4>Concept Clusters</h4>
+        
+        {
+            my $clusters_html = '';
+            my $count = 1;
+            
+            foreach my $cluster (@{$semantic_clusters}) {
+                $clusters_html .= qq{
+        <div class="cluster">
+            <h5 class="cluster-theme">};
+                
+                if ($cluster->{theme} && @{$cluster->{theme}} > 0) {
+                    $clusters_html .= join(", ", @{$cluster->{theme}});
+                } else {
+                    $clusters_html .= "Cluster " . $count;
+                }
+                
+                $clusters_html .= qq{
+            </h5>
+            
+            <ul class="cluster-entries">};
+                
+                foreach my $entry (@{$cluster->{entries}}) {
+                    $clusters_html .= qq{
+                <li class="cluster-entry">
+                    <a href="$base_uri} . $entry->filename_base() . qq{$extension">
+                        } . $entry->title() . qq{
+                    </a>
+                </li>};
+                }
+                
+                $clusters_html .= qq{
+            </ul>
+        </div>};
+                
+                $count++;
+            }
+            
+            $clusters_html;
+        }
+    </div>
+    { } }
+    
+    { if ($generate_export_links) { }
+    <div class="export-section">
+        <h4>Export Links</h4>
+        
+        <div class="export-formats">
+            <button class="export-button" data-format="markdown">Markdown</button>
+            <button class="export-button" data-format="obsidian">Obsidian</button>
+            <button class="export-button" data-format="roam">Roam</button>
+            <button class="export-button" data-format="logseq">Logseq</button>
+        </div>
+        
+        <div class="export-content">
+            <pre id="export-output"></pre>
+            <button id="copy-export-btn">Copy to Clipboard</button>
+        </div>
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const entryData = {
+                    title: "{ $entry->title() =~ s/"/\\"/gr }",
+                    filename: "{ $entry->filename() =~ s/"/\\"/gr }",
+                    tags: [{ 
+                        join(', ', 
+                            map { qq{"$_"} } 
+                            @{$entry->tags() || []}
+                        ) 
+                    }],
+                    backlinks: [{ 
+                        my $bl_json = '';
+                        my $count = 0;
+                        foreach my $link (@{$backlinks || []}) {
+                            if ($count > 0) {
+                                $bl_json .= ', ';
+                            }
+                            $bl_json .= qq{{
+                        title: "} . ($link->{entry}->title() =~ s/"/\\"/gr) . qq{",
+                        filename: "} . ($link->{entry}->filename() =~ s/"/\\"/gr) . qq{"
+                    }};
+                            $count++;
+                        }
+                        $bl_json;
+                    }],
+                    outgoing_links: [{
+                        my $ol_json = '';
+                        my $count = 0;
+                        foreach my $link (@{$outgoing_links || []}) {
+                            if ($count > 0) {
+                                $ol_json .= ', ';
+                            }
+                            $ol_json .= qq{{
+                        title: "} . ($link->{entry}->title() =~ s/"/\\"/gr) . qq{",
+                        filename: "} . ($link->{entry}->filename() =~ s/"/\\"/gr) . qq{"
+                    }};
+                            $count++;
+                        }
+                        $ol_json;
+                    }],
+                    semantic_links: [{
+                        my $sl_json = '';
+                        my $count = 0;
+                        foreach my $link (@{$semantic_links || []}) {
+                            if ($count > 0) {
+                                $sl_json .= ', ';
+                            }
+                            $sl_json .= qq{{
+                        title: "} . ($link->{entry}->title() =~ s/"/\\"/gr) . qq{",
+                        filename: "} . ($link->{entry}->filename() =~ s/"/\\"/gr) . qq{",
+                        similarity: } . $link->{similarity} . qq{
+                    }};
+                            $count++;
+                        }
+                        $sl_json;
+                    }]
+                };
+                
+                function generateMarkdownLinks() {
+                    let output = `# ${entryData.title} - References\n\n`;
+                    
+                    if (entryData.backlinks.length > 0) {
+                        output += "## Backlinks\n\n";
+                        entryData.backlinks.forEach(link => {
+                            output += `- [[${link.filename.replace(/\.md$/, '')}|${link.title}]]\n`;
+                        });
+                        output += "\n";
+                    }
+                    
+                    if (entryData.outgoing_links.length > 0) {
+                        output += "## References\n\n";
+                        entryData.outgoing_links.forEach(link => {
+                            output += `- [[${link.filename.replace(/\.md$/, '')}|${link.title}]]\n`;
+                        });
+                        output += "\n";
+                    }
+                    
+                    if (entryData.semantic_links.length > 0) {
+                        output += "## Related Notes\n\n";
+                        entryData.semantic_links.forEach(link => {
+                            output += `- [[${link.filename.replace(/\.md$/, '')}|${link.title}]] (${Math.round(link.similarity * 100)}%)\n`;
+                        });
+                    }
+                    
+                    return output;
+                }
+                
+                function generateObsidianLinks() {
+                    // Similar to Markdown but with Obsidian-specific syntax
+                    let output = generateMarkdownLinks();
+                    
+                    // Add dataview metadata
+                    output += "\n---\n\n";
+                    output += "## Metadata\n\n";
+                    output += "```dataview\n";
+                    output += `title: "${entryData.title}"\n`;
+                    output += `tags: ${JSON.stringify(entryData.tags)}\n`;
+                    output += `related: ${entryData.semantic_links.map(l => l.filename.replace(/\.md$/, '')).join(', ')}\n`;
+                    output += "```\n";
+                    
+                    return output;
+                }
+                
+                function generateRoamLinks() {
+                    // Roam format uses ((page references))
+                    let output = `# ${entryData.title} - References\n\n`;
+                    
+                    if (entryData.backlinks.length > 0) {
+                        output += "## Backlinks\n\n";
+                        entryData.backlinks.forEach(link => {
+                            output += `- ((${link.filename.replace(/\.md$/, '')})) ${link.title}\n`;
+                        });
+                        output += "\n";
+                    }
+                    
+                    if (entryData.outgoing_links.length > 0) {
+                        output += "## References\n\n";
+                        entryData.outgoing_links.forEach(link => {
+                            output += `- ((${link.filename.replace(/\.md$/, '')})) ${link.title}\n`;
+                        });
+                        output += "\n";
+                    }
+                    
+                    if (entryData.semantic_links.length > 0) {
+                        output += "## Related Notes\n\n";
+                        entryData.semantic_links.forEach(link => {
+                            output += `- ((${link.filename.replace(/\.md$/, '')})) ${link.title} #[[similar]]\n`;
+                        });
+                    }
+                    
+                    return output;
+                }
+                
+                function generateLogseqLinks() {
+                    // Logseq format
+                    let output = `title:: ${entryData.title}\n`;
+                    output += `tags:: ${entryData.tags.map(t => `[[${t}]]`).join(' ')}\n\n`;
+                    
+                    if (entryData.backlinks.length > 0) {
+                        output += "## Backlinks\n\n";
+                        entryData.backlinks.forEach(link => {
+                            output += `- [[${link.title}]]\n`;
+                        });
+                        output += "\n";
+                    }
+                    
+                    if (entryData.outgoing_links.length > 0) {
+                        output += "## References\n\n";
+                        entryData.outgoing_links.forEach(link => {
+                            output += `- [[${link.title}]]\n`;
+                        });
+                        output += "\n";
+                    }
+                    
+                    if (entryData.semantic_links.length > 0) {
+                        output += "## Related Notes\n\n";
+                        entryData.semantic_links.forEach(link => {
+                            output += `- [[${link.title}]] similarity:: ${(link.similarity * 100).toFixed(0)}%\n`;
+                        });
+                    }
+                    
+                    return output;
+                }
+                
+                // Set up event handlers
+                document.querySelectorAll('.export-button').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const format = this.dataset.format;
+                        let output = '';
+                        
+                        switch (format) {
+                            case 'markdown':
+                                output = generateMarkdownLinks();
+                                break;
+                            case 'obsidian':
+                                output = generateObsidianLinks();
+                                break;
+                            case 'roam':
+                                output = generateRoamLinks();
+                                break;
+                            case 'logseq':
+                                output = generateLogseqLinks();
+                                break;
+                        }
+                        
+                        document.getElementById('export-output').textContent = output;
+                    });
+                });
+                
+                // Copy button
+                document.getElementById('copy-export-btn').addEventListener('click', function() {
+                    const text = document.getElementById('export-output').textContent;
+                    navigator.clipboard.writeText(text).then(() => {
+                        const originalText = this.textContent;
+                        this.textContent = 'Copied!';
+                        setTimeout(() => {
+                            this.textContent = originalText;
+                        }, 2000);
+                    });
+                });
+            });
+        </script>
+    </div>
+    { } }
+</div>

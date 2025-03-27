@@ -1,0 +1,43 @@
+{
+   # Process layout template with these variables
+   $title = $archive->title();
+   $page_url = $base_uri . $archive->filename_base();
+   $feed_links = 0;
+   
+   # Define content
+   $content = q{
+<div class="archive">
+    <header>
+        <h1>} . $archive->title() . q{</h1>
+    </header>
+    
+    } . (sub {
+        my $groups_html = '';
+        foreach my $group (@{$groups || []}) {
+            $groups_html .= q{
+    <section class="archive-group">
+        <h2>} . $group->{label} . q{ (} . $group->{count} . q{)</h2>
+        
+        <ul class="archive-entries">
+            } . (sub {
+                my $entries_html = '';
+                foreach my $entry (@{$group->{entries} || []}) {
+                    $entries_html .= q{
+            <li>
+                <a href="} . $base_uri . $entry->filename_base() . $extension . q{">} . $entry->title() . q{</a>
+                <span class="date">(} . $entry->date()->strftime('%B %d, %Y') . q{)</span>
+            </li>};
+                }
+                return $entries_html;
+            }->()) . q{
+        </ul>
+    </section>};
+        }
+        return $groups_html;
+    }->()) . q{
+</div>
+   };
+   
+   # Include the layout template with our variables
+   include('layout');
+}

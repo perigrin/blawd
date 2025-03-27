@@ -1,0 +1,21 @@
+<div class="related-content">
+    <h3>{ $title }</h3>
+    <ul>
+        { 
+        my $items_html = '';
+        foreach my $item (@{$related || []}) {
+            $items_html .= '<li>' .
+                '<a href="' . $base_uri . $item->{entry}->filename_base() . $extension . '">' . 
+                $item->{entry}->title() . '</a>';
+            
+            if ($show_similarity) {
+                $items_html .= '<span class="similarity">' . 
+                    int($item->{similarity} * 100) . '%</span>';
+            }
+            
+            $items_html .= '</li>';
+        }
+        $items_html;
+        }
+    </ul>
+</div>

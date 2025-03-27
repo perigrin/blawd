@@ -1,0 +1,60 @@
+{
+   # Process layout template with these variables
+   $title = $index->title();
+   $page_url = $base_uri . $index->filename_base();
+   $feed_links = 1;
+   
+   # Define content
+   $content = q{
+<div class="index">
+    <header>
+        <h1>} . $index->title() . q{</h1>
+    </header>
+    
+    } . (sub {
+        my $entries_html = '';
+        foreach my $entry (@{$index->entries() || []}) {
+            $entries_html .= q{
+    <article class="entry-summary">
+        <h2><a href="} . $base_uri . $entry->filename_base() . $extension . q{">} . $entry->title() . q{</a></h2>
+        
+        <div class="entry-excerpt">
+            } . (sub {
+                my $body = $entry->body();
+                my $summary = substr($body, 0, 300);
+                $summary =~ s/<.*?>//g; # Remove HTML tags
+                return $summary . (length($body) > 300 ? '...' : '');
+            }->()) . q{
+        </div>
+        
+        <footer class="entry-meta">
+            <span class="date">} . $entry->date()->strftime('%B %d, %Y') . q{</span>
+            by <span class="author">} . $entry->author() . q{</span>
+            
+            } . ((@{$entry->tags() || []}) ? q{
+            <div class="tags">
+                <span>Tags:</span>
+                } . (sub {
+                    my $tag_links = '';
+                    my $i = 0;
+                    foreach my $tag (@{$entry->tags()}) {
+                        $tag_links .= q{<a href="} . $base_uri . q{tag/} . filter($tag, 'uri') . $extension . q{">} . $tag . q{</a>};
+                        $tag_links .= q{, } if $i < scalar(@{$entry->tags()}) - 1;
+                        $i++;
+                    }
+                    return $tag_links;
+                }->()) . q{
+            </div>
+            } : '') . q{
+        </footer>
+    </article>
+            };
+        }
+        return $entries_html;
+    }->()) . q{
+</div>
+   };
+   
+   # Include the layout template with our variables
+   include('layout');
+}

@@ -1,0 +1,80 @@
+{
+   "abstract" : "A modern static site generator with semantic indexing",
+   "author" : [
+      "Chris Prather <chris@prather.org>"
+   ],
+   "dynamic_config" : 0,
+   "generated_by" : "Manual, CPAN::Meta::Converter version 2.150010",
+   "license" : [
+      "perl_5"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : 2
+   },
+   "name" : "BlawdNexus",
+   "no_index" : {
+      "directory" : [
+         "t",
+         "xt",
+         "examples",
+         "corpus"
+      ]
+   },
+   "prereqs" : {
+      "configure" : {
+         "requires" : {
+            "Module::Build::Tiny" : "0.039"
+         }
+      },
+      "develop" : {
+         "requires" : {
+            "Module::Build::Tiny" : "0",
+            "Pod::Coverage::TrustPod" : "0",
+            "Test::Pod" : "0",
+            "Test::Pod::Coverage" : "0"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "perl" : "5.40.0",
+            "Path::Tiny" : "0",
+            "URI::Escape" : "0",
+            "YAML::XS" : "0",
+            "Text::MultiMarkdown" : "0",
+            "XML::RSS" : "0",
+            "XML::Atom::Feed" : "0",
+            "Plack" : "0",
+            "DBI" : "0",
+            "DBD::SQLite" : "0",
+            "HTML::Strip" : "0",
+            "Term::ANSIColor" : "0"
+         }
+      },
+      "test" : {
+         "requires" : {
+            "Test2::V0" : "0"
+         }
+      }
+   },
+   "provides" : {
+      "BlawdNexus" : {
+         "file" : "lib/BlawdNexus.pm",
+         "version" : "0.001"
+      }
+   },
+   "release_status" : "stable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/perigrin/blawd/issues"
+      },
+      "homepage" : "https://github.com/perigrin/blawd",
+      "repository" : {
+         "type" : "git",
+         "url" : "https://github.com/perigrin/blawd.git",
+         "web" : "https://github.com/perigrin/blawd"
+      }
+   },
+   "version" : "0.001",
+   "x_static_install" : 1
+}

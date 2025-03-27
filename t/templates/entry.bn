@@ -1,0 +1,6 @@
+<article>
+  <h1>[% entry.title %]</h1>
+  <div class="content">
+    [% entry_content %]
+  </div>
+</article>
